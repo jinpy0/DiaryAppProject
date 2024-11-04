@@ -2,6 +2,8 @@ package FirstTest.UI;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 // 왼쪽으로 이동시켜야 함, 간격 추가
 
@@ -49,10 +51,12 @@ public class SignUpScreen extends JFrame {
         passwordConfirmPanel.add(confirmPasswordLabel);
         passwordConfirmPanel.add(confirmPasswordField);
 
-        // 회원가입 버튼 패널
+        // 뒤로가기, 회원가입 버튼 패널
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
         JButton signupButton = new JButton("회원가입");
+        JButton backButton = new JButton("뒤로가기");
+        buttonPanel.add(backButton);
         buttonPanel.add(signupButton);
 
         // 패널 추가
@@ -64,6 +68,14 @@ public class SignUpScreen extends JFrame {
 
         // 하단 여백
         add(Box.createVerticalStrut(30));
+
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new LogInScreen();
+                dispose();
+            }
+        });
 
         setVisible(true);
     }

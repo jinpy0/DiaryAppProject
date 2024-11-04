@@ -44,7 +44,6 @@ public class LogInScreen extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String username = userField.getText();
                 String password = new String(passwordField.getPassword());
-                // 로그인 처리 로직 추가
                 System.out.println("로그인 시도: " + username + " / 비밀번호: " + password);
             }
         });
@@ -55,24 +54,27 @@ public class LogInScreen extends JFrame {
         // 회원가입 및 비밀번호 찾기 버튼
         JPanel buttonPanel = new JPanel();
         JButton signupButton = new JButton("회원가입");
-        JButton findPasswordButton = new JButton("비밀번호 찾기");
+        JButton findPasswordButton = new JButton("아이디 / 비밀번호 찾기");
         buttonPanel.add(signupButton);
         buttonPanel.add(findPasswordButton);
         add(buttonPanel); // 버튼 패널 추가
 
-        // 버튼 클릭 이벤트 처리
+        // 회원가입 페이지로 이동
         signupButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // 회원가입 화면으로 전환
-                new SignUpScreen(); // SignUpScreen 클래스 생성
+                new SignUpScreen();
                 dispose(); // 현재 로그인 화면 닫기
             }
         });
 
-        findPasswordButton.addActionListener(e -> {
-            // 비밀번호 찾기 화면으로 전환 로직 추가
-            System.out.println("비밀번호 찾기 화면으로 이동");
+        // 아이디 / 비밀번호 찾기 페이지로 이동
+        findPasswordButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new FindIdPassWordScreen();
+                dispose();
+            }
         });
 
         setVisible(true);

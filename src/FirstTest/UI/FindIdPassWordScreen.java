@@ -2,6 +2,8 @@ package FirstTest.UI;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class FindIdPassWordScreen extends JFrame {
     public FindIdPassWordScreen() {
@@ -64,6 +66,14 @@ public class FindIdPassWordScreen extends JFrame {
 
 //        뒤로가기 추가
         add(backButtonPanel);
+
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new LogInScreen();
+                dispose();
+            }
+        });
 
         setVisible(true);
     }
