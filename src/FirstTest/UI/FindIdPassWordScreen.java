@@ -13,41 +13,57 @@ public class FindIdPassWordScreen extends JFrame {
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS)); // 수직 박스 레이아웃 설정
 
 //        ID 찾기 ( Email 입력 )
-        JPanel findIdPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel findIdPanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); // 이메일 입력 패널
         JLabel inputEmail = new JLabel("이메일 : ");
         JTextField inputEmailField = new JTextField(20);
-        JButton idBtn = new JButton("아이디 찾기");
-        JPanel findIdPanel1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
-
-        findPasswordPanel1.add(idBtn);
         findIdPanel.add(inputEmail);
         findIdPanel.add(inputEmailField);
 
+        JPanel userNamePanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); // 사용자 이름 입력 패널
+        JLabel inputName = new JLabel("이름 : ");
+        JTextField inputNameField = new JTextField(20);
+        userNamePanel.add(inputName);
+        userNamePanel.add(inputNameField);
+
+        JPanel findIdButtonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); // 버튼만 있는 패널
+        JButton idBtn = new JButton("아이디 찾기");
+        findIdButtonPanel.add(idBtn);
+        
+
 //        비밀번호 찾기 (아이디, 이메일 입력)
 //        아이디 입력
-        JPanel findPassWordPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JPanel findPasswordPanel1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+
+        JPanel inputIdPanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); // 아이디 입력 패널
         JLabel inputId = new JLabel("ID : ");
         JTextField inputIdField = new JTextField(20);
 
 
 //        이메일 입력
         JPanel inputEmailPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JPanel inputEmailPanel1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel inputEmailLabel = new JLabel("Email : ");
         JTextField inputEmailField1 = new JTextField(20);
+
+
+        JPanel findPasswordPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JButton passwordBtn = new JButton("비밀번호 찾기");
 
-        findPassWordPanel.add(inputId);
-        findPassWordPanel.add(inputIdField);
+
+        inputIdPanel.add(inputId);
+        inputIdPanel.add(inputIdField);
+
         inputEmailPanel.add(inputEmailLabel);
         inputEmailPanel.add(inputEmailField1);
-        inputEmailPanel1.add(passwordBtn);
 
+        findPasswordPanel.add(passwordBtn);
 
+        // 아이디 찾기 추가
         add(findIdPanel);
-        add(findIdPanel1);
-        add(findPassWordPanel);
+        add(userNamePanel);
+        add(findIdButtonPanel);
+
+        // 비밀번호 찾기 추가
+        add(inputIdPanel);
+//        add(findPasswordPanel1);
 
         setVisible(true);
     }
