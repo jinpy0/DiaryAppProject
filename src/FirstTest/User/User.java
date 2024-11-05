@@ -5,12 +5,14 @@ public class User {
     private String ID;
     private String name;
     private String email;
+    private String password;
 
-    public User(String profileImagePath, String ID, String name, String email) {
+    public User(String profileImagePath, String ID, String name, String email, String password) {
         this.profileImagePath = profileImagePath;
         this.ID = ID;
         this.name = name;
         this.email = email;
+        this.password = password;
     }
 
     public String getProfileImagePath() {
@@ -43,5 +45,13 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

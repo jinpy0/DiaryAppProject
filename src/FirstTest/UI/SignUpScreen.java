@@ -1,5 +1,7 @@
 package FirstTest.UI;
 
+
+
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
@@ -10,6 +12,9 @@ import java.io.File;
 // 왼쪽으로 이동시켜야 함, 간격 추가
 
 public class SignUpScreen extends JFrame {
+    private String imagePath; // 이미지 경로 저장 변수
+    private final String defaultImagePath = "defaultImage.png"; // 기본 이미지 경로
+
     public SignUpScreen() {
         // 기본 설정
         setTitle("회원가입 화면");
@@ -41,10 +46,10 @@ public class SignUpScreen extends JFrame {
                 int result = fileChooser.showOpenDialog(SignUpScreen.this);
                 if(result == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
-                    String filePath = selectedFile.getAbsolutePath();
+                    String imagePath = selectedFile.getAbsolutePath(); // 이미지 경로 저장
 
                     // 이미지 표시
-                    ImageIcon imageIcon = new ImageIcon(filePath);
+                    ImageIcon imageIcon = new ImageIcon(imagePath);
                     Image image = imageIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
                     imageLabel.setIcon(new ImageIcon(image));
                     imageLabel.setText(null); // 기존 텍스트 제거
@@ -112,11 +117,37 @@ public class SignUpScreen extends JFrame {
         // 하단 여백
         add(Box.createVerticalStrut(30));
 
+        // 뒤로가기 버튼
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 new LogInScreen();
                 dispose();
+            }
+        });
+
+        // 회원가입 버튼
+        signupButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+//                String imagePath = imageLabel.getText();
+                String username = usernameField.getText();
+                String name = nameField.getText();
+                String email = emailField.getText();
+                String password = String.valueOf(passwordField.getPassword());
+                String confirmPassword = String.valueOf(confirmPasswordField.getPassword());
+
+                // 비밀번호가 틀렸을 때
+                if(!password.equals(confirmPassword)) {
+                    JOptionPane.showMessageDialog(SignUpScreen.this, "비밀번호가 일치하지 않습니다.");
+                    return;
+                }
+                // 이미지를 넣지 않았을 때
+                if(imagePath == null || imagePath.isEmpty()){
+                    imagePath = defaultImagePath;
+                }
+                
+                // 회원가입 정보를 DB에 저장하는 로직을 추가해야 함
             }
         });
 
