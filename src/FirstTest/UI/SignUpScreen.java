@@ -61,9 +61,9 @@ public class SignUpScreen extends JFrame {
         // 아이디 입력 패널
         JPanel idPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel signupLabel = new JLabel("아이디:");
-        JTextField usernameField = new JTextField(10); // 열 수를 10으로 설정하여 폭 조절
+        JTextField userIdField = new JTextField(15);
         idPanel.add(signupLabel);
-        idPanel.add(usernameField);
+        idPanel.add(userIdField);
 
         // 중복 확인 버튼
         JButton checkDuplicateButton = new JButton("중복 확인");
@@ -72,28 +72,28 @@ public class SignUpScreen extends JFrame {
         // 이름 입력 패널
         JPanel namePanel =  new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel nameLabel = new JLabel("이름 : ");
-        JTextField nameField = new JTextField(10);
+        JTextField nameField = new JTextField(15);
         namePanel.add(nameLabel);
         namePanel.add(nameField);
 
         // 이메일 입력 패널
         JPanel emailPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel emailLabel = new JLabel("이메일 : ");
-        JTextField emailField = new JTextField(10); // 열 수를 10으로 설정하여 폭 조절
+        JTextField emailField = new JTextField(15); // 열 수를 10으로 설정하여 폭 조절
         emailPanel.add(emailLabel);
         emailPanel.add(emailField);
 
         // 비밀번호 입력 패널
         JPanel passwordPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel passwordLabel = new JLabel("비밀번호:");
-        JPasswordField passwordField = new JPasswordField(10); // 열 수를 10으로 설정하여 폭 조절
+        JPasswordField passwordField = new JPasswordField(15); // 열 수를 10으로 설정하여 폭 조절
         passwordPanel.add(passwordLabel);
         passwordPanel.add(passwordField);
 
         // 비밀번호 확인 입력 패널
         JPanel passwordConfirmPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel confirmPasswordLabel = new JLabel("비밀번호 확인:");
-        JPasswordField confirmPasswordField = new JPasswordField(10); // 열 수를 10으로 설정하여 폭 조절
+        JPasswordField confirmPasswordField = new JPasswordField(15); // 열 수를 10으로 설정하여 폭 조절
         passwordConfirmPanel.add(confirmPasswordLabel);
         passwordConfirmPanel.add(confirmPasswordField);
 
@@ -131,7 +131,7 @@ public class SignUpScreen extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
 //                String imagePath = imageLabel.getText();
-                String userId = usernameField.getText();
+                String userId = userIdField.getText();
                 String name = nameField.getText();
                 String email = emailField.getText();
                 String password = String.valueOf(passwordField.getPassword());
@@ -139,40 +139,42 @@ public class SignUpScreen extends JFrame {
 
                 // 입력해야 하는 값들을 입력하지 않았을 때
                 // id 입력 x
-                if(userId == null){
+                if(userId.isEmpty()){
                     JOptionPane.showMessageDialog(SignUpScreen.this, "아이디를 입력해주세요");
                     return;
                 }
                 // 이름 입력 x
-                if(name == null){
+                if(name.isEmpty()){
                     JOptionPane.showMessageDialog(SignUpScreen.this, "이름을 입력해주세요");
                     return;
                 }
                 // 이메일 입력 x
-                if(email == null){
+                if(email.isEmpty()){
                     JOptionPane.showMessageDialog(SignUpScreen.this, "이메일을 입력해주세요");
                     return;
                 }
                 // 비밀번호 입력 x
-                if(password == null){
+                if(password.isEmpty()){
                     JOptionPane.showMessageDialog(SignUpScreen.this, "비밀번호를 입력해주세요");
                 }
                 // 비밀번호 확인 입력 x
-                if(confirmPassword == null){
+                if(confirmPassword.isEmpty()){
                     JOptionPane.showMessageDialog(SignUpScreen.this, "비밀번호 확인란을 입력해주세요");
                     return;
                 }
-
 
                 // 비밀번호가 틀렸을 때
                 if(!password.equals(confirmPassword)) {
                     JOptionPane.showMessageDialog(SignUpScreen.this, "비밀번호가 일치하지 않습니다.");
                     return;
                 }
-                // 이미지를 넣지 않았을 때
+                // 이미지를 넣지 않았을 때 ( 기본 이미지 설정 )
                 if(imagePath == null || imagePath.isEmpty()){
                     imagePath = defaultImagePath;
                 }
+                // 중복확인 버튼을 눌렀을 때 로직 추가해야 함
+
+                // 중복확인을 안했을 때 로직 추가해야 함
                 
                 // 회원가입 정보를 DB에 저장하는 로직을 추가해야 함
 
