@@ -80,6 +80,7 @@ public class DiaryListScreen extends JFrame {
                 dispose();
             }
         });
+        //
         add(imagePanel);
         add(userFeed);
         add(btnPanel);
