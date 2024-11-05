@@ -35,8 +35,9 @@ public class DiaryListScreen extends JFrame {
             feedLabel.setPreferredSize(new Dimension(100, 100));
             feedLabel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
             feedLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
-            feedLabel.setIcon(new ImageIcon("path/to/your/image.jpg")); // 실제 이미지 경로를 입력
+            
+            // DB 연동 시 수정해야 함
+            feedLabel.setIcon(new ImageIcon("파일 경로.jpg"));
             userFeed.add(feedLabel);
         }
 
