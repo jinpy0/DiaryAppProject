@@ -131,11 +131,38 @@ public class SignUpScreen extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
 //                String imagePath = imageLabel.getText();
-                String username = usernameField.getText();
+                String userId = usernameField.getText();
                 String name = nameField.getText();
                 String email = emailField.getText();
                 String password = String.valueOf(passwordField.getPassword());
                 String confirmPassword = String.valueOf(confirmPasswordField.getPassword());
+
+                // 입력해야 하는 값들을 입력하지 않았을 때
+                // id 입력 x
+                if(userId == null){
+                    JOptionPane.showMessageDialog(SignUpScreen.this, "아이디를 입력해주세요");
+                    return;
+                }
+                // 이름 입력 x
+                if(name == null){
+                    JOptionPane.showMessageDialog(SignUpScreen.this, "이름을 입력해주세요");
+                    return;
+                }
+                // 이메일 입력 x
+                if(email == null){
+                    JOptionPane.showMessageDialog(SignUpScreen.this, "이메일을 입력해주세요");
+                    return;
+                }
+                // 비밀번호 입력 x
+                if(password == null){
+                    JOptionPane.showMessageDialog(SignUpScreen.this, "비밀번호를 입력해주세요");
+                }
+                // 비밀번호 확인 입력 x
+                if(confirmPassword == null){
+                    JOptionPane.showMessageDialog(SignUpScreen.this, "비밀번호 확인란을 입력해주세요");
+                    return;
+                }
+
 
                 // 비밀번호가 틀렸을 때
                 if(!password.equals(confirmPassword)) {
@@ -148,6 +175,10 @@ public class SignUpScreen extends JFrame {
                 }
                 
                 // 회원가입 정보를 DB에 저장하는 로직을 추가해야 함
+
+                // 로그인 화면으로 이동하는 로직
+                new LogInScreen();
+                dispose();
             }
         });
 
