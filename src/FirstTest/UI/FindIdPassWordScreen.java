@@ -34,13 +34,13 @@ public class FindIdPassWordScreen extends JFrame {
 //        비밀번호 찾기 (아이디, 이메일 입력)
 //        아이디 입력
         JPanel inputIdPanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); // 아이디 입력 패널
-        JLabel inputId = new JLabel("ID : ");
+        JLabel inputId = new JLabel("아이디 : ");
         JTextField inputIdField = new JTextField(20);
         inputIdPanel.add(inputId);
         inputIdPanel.add(inputIdField);
 
         JPanel inputEmailPanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); // 이메일 입력 패널
-        JLabel inputEmailLabel = new JLabel("Email : ");
+        JLabel inputEmailLabel = new JLabel("이메일 : ");
         JTextField inputEmailField1 = new JTextField(20);
         inputEmailPanel.add(inputEmailLabel);
         inputEmailPanel.add(inputEmailField1);
