@@ -2,6 +2,8 @@ package FirstTest.UI;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class DiaryListScreen extends JFrame {
     public DiaryListScreen() { // User 클래스의 인스턴스를 매개변수로 받아와서 리스트 만들기?
@@ -41,8 +43,46 @@ public class DiaryListScreen extends JFrame {
             userFeed.add(feedLabel);
         }
 
+        // 로그아웃, 일기 쓰기, 정보 수정 버튼 추가
+
+        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JButton logoutButton = new JButton("로그아웃");
+        JButton newButton = new JButton("일기 작성");
+        JButton settingButton = new JButton("설정");
+        btnPanel.add(logoutButton);
+        btnPanel.add(newButton);
+        btnPanel.add(settingButton);
+
+        // 버튼 이벤트
+        // 로그아웃 버튼
+        logoutButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new LogInScreen();
+                dispose();
+            }
+        });
+
+        // 일기 작성 버튼
+        newButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new newDiaryScreen();
+                dispose();
+            }
+        });
+
+        // 설정 버튼
+        settingButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // 설정 화면 이동 로직 추가
+                dispose();
+            }
+        });
         add(imagePanel);
         add(userFeed);
+        add(btnPanel);
 
         setVisible(true);
     }
