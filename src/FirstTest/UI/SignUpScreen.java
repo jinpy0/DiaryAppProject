@@ -21,7 +21,7 @@ public class SignUpScreen extends JFrame {
         setSize(350, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
 
         // 상단 여백 추가
         add(Box.createVerticalStrut(30));
@@ -116,6 +116,9 @@ public class SignUpScreen extends JFrame {
 
         // 하단 여백
         add(Box.createVerticalStrut(30));
+
+        // 중복확인 버튼 구현해야 함
+
 
         // 뒤로가기 버튼
         backButton.addActionListener(new ActionListener() {

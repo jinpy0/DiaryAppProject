@@ -13,8 +13,6 @@ public class DiaryListScreen extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
-
-
         // JPanel imagePanel 이미지 어떻게 받아올 지 (일단 빈 박스로 구현)
         // 이미지, 회원 아이디 출력
         // 이미지 추가
@@ -39,6 +37,7 @@ public class DiaryListScreen extends JFrame {
             feedLabel.setHorizontalAlignment(SwingConstants.CENTER);
             
             // DB 연동 시 수정해야 함
+            // 다른 사진을 넣어야 하는데 for 문으로 되는지????
             feedLabel.setIcon(new ImageIcon("파일 경로.jpg"));
             userFeed.add(feedLabel);
         }
@@ -76,7 +75,7 @@ public class DiaryListScreen extends JFrame {
         settingButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // 설정 화면 이동 로직 추가
+                new SettingScreen();
                 dispose();
             }
         });
