@@ -99,10 +99,21 @@ public class SettingScreen extends JFrame {
         });
 
         // 뒤로가기 버튼
-
+        backBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                new newDiaryScreen();
+                dispose();
+            }
+        });
 
         // 정보 수정 버튼
-
+        setBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // 수정하는 로직 추가 필요
+                new DiaryListScreen();
+                dispose();
+            }
+        });
 
 
 
