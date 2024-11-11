@@ -77,6 +77,7 @@ public class LogInScreen extends JFrame {
             }
         });
 
+
         setVisible(true);
     }
 

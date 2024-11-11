@@ -19,7 +19,7 @@ public class SettingScreen extends JFrame {
         JPanel imagePanel = new JPanel();
         JLabel imageLabel = new JLabel(); // 기본 이미지 받아오기 설정해야함
         imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        imageLabel.setPreferredSize(new Dimension(100,100));
+        imageLabel.setPreferredSize(new Dimension(120,120));
         imageLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         imagePanel.add(imageLabel);
 
@@ -38,7 +38,7 @@ public class SettingScreen extends JFrame {
 
         // 이메일 수정 패널
         JPanel setEmailPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JLabel emailLabel = new JLabel("이메일 : ");
+        JLabel emailLabel = new JLabel("이메일 수정 : ");
         JTextField setEmailField = new JTextField(15);
         setEmailPanel.add(emailLabel);
         setEmailPanel.add(setEmailField);
@@ -94,14 +94,14 @@ public class SettingScreen extends JFrame {
         // 중복 확인 버튼
         checkIdBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
+                // 데이터베이스에서 아이디 받아오고 비교하는 로직 추가 필요
             }
         });
 
         // 뒤로가기 버튼
         backBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                new newDiaryScreen();
+                new NewDiaryScreen();
                 dispose();
             }
         });
@@ -114,8 +114,6 @@ public class SettingScreen extends JFrame {
                 dispose();
             }
         });
-
-
 
         add(imagePanel);
         add(buttonPanel);

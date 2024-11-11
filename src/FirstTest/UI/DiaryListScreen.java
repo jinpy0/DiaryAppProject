@@ -27,7 +27,6 @@ public class DiaryListScreen extends JFrame {
         userIdLabel.setHorizontalAlignment(SwingConstants.CENTER);
         imagePanel.add(userIdLabel);
 
-
         // 사용자 피드
         JPanel userFeed = new JPanel(new GridLayout(3, 3, 5, 5)); // 5,5는 간격 조절
         for (int i = 0; i < 9; i++) {
@@ -66,7 +65,7 @@ public class DiaryListScreen extends JFrame {
         newButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new newDiaryScreen();
+                new NewDiaryScreen();
                 dispose();
             }
         });
