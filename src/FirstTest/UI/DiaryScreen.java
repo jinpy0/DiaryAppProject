@@ -25,13 +25,13 @@ public class DiaryScreen extends JFrame {
 
         // 제목 패널
         JPanel titlePanel = new JPanel();
-        JLabel titleLabel = new JLabel("a");
+        JLabel titleLabel = new JLabel("제목");
         // 텍스트 어떻게 받아올 지
         titlePanel.add(titleLabel);
 
         // 내용 패널
         JPanel contentPanel = new JPanel();
-        JLabel contentLabel = new JLabel("b");
+        JLabel contentLabel = new JLabel("<html>내용 ( 여러 줄로 받기 위해 html로 받기 ) </html>");
         // 내용 어떻게 받아올지
         contentPanel.add(contentLabel);
 
