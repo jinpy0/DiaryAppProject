@@ -42,6 +42,25 @@ public class NewDiaryScreen2 extends JFrame {
 
         add(datePicker);
 
+        // 전에 선택한 이미지 100 * 100 사이즈로 띄우기 // 전에 선택한 이미지 어떻게 받아올지?
+        JPanel imagePanel = new JPanel();
+        JLabel imageLabel = new JLabel();
+        imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        imageLabel.setPreferredSize(new Dimension(100, 100));
+        imageLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        imagePanel.add(imageLabel);
+
+        // 일기 내용 작성 textBox
+        JPanel textPanel = new JPanel();
+        JTextArea textArea = new JTextArea(20, 30);
+        textPanel.add(textArea);
+
+        // 뒤로가기, 작성하기 버튼
+        JPanel btnPanel = new JPanel();
+        JButton backBtn = new JButton("뒤로가기");
+        JButton createBtn = new JButton("작성하기");
+        btnPanel.add(backBtn);
+        btnPanel.add(createBtn);
 
         dateBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -62,7 +81,51 @@ public class NewDiaryScreen2 extends JFrame {
             }
         });
 
+        backBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                new NewDiaryScreen();
+                dispose();
+            }
+        });
+
+        createBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // 제목 작성 안했을 때 입력하라고 뜨게 하기
+                String title = titleTextField.getText();
+                if(title.isEmpty()) {
+                    JOptionPane.showMessageDialog(NewDiaryScreen2.this, "제목을 입력해주세요");
+                    return;
+                }
+
+                // 날짜 선택 안했을 때 입력하라고 뜨게 하기
+                LocalDate selectedDate = datePicker.getDate();
+                if(selectedDate == null) {
+                    JOptionPane.showMessageDialog(NewDiaryScreen2.this, "날짜를 선택해주세요");
+                    return;
+                }
+
+                // 내용 작성 안했을 때 입력하라고 뜨게 하기
+                String text = textArea.getText();
+                if(text.isEmpty()) {
+                    JOptionPane.showMessageDialog(NewDiaryScreen2.this, "내용을 입력해주세요");
+                    return;
+                }
+
+                // 모두 작성했을 때 작성하기
+                JOptionPane.showMessageDialog(NewDiaryScreen2.this, "작성완료");
+
+                // 업로드 하는 기능 구현?
+
+                // 창 닫기
+                new DiaryListScreen();
+                dispose();
+            }
+        });
+
         add(titlePanel);
+        add(imagePanel);
+        add(textPanel);
+        add(btnPanel);
 
         setVisible(true);
     }
