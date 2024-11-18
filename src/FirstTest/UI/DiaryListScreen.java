@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class DiaryListScreen extends JFrame {
+
     public DiaryListScreen() { // User 클래스의 인스턴스를 매개변수로 받아와서 리스트 만들기?
         setTitle("일기 목록");
         setSize(350, 600);
@@ -14,7 +15,7 @@ public class DiaryListScreen extends JFrame {
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
         // JPanel imagePanel 이미지 어떻게 받아올 지 (일단 빈 박스로 구현)
-        // 이미지, 회원 아이디 출력
+        // 이미지, 회원 아이디 출력W
         // 이미지 추가
         JPanel imagePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel imageLabel = new JLabel();
