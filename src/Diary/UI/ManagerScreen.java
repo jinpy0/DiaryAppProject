@@ -1,4 +1,4 @@
-package FirstTest.UI;
+package Diary.UI;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;

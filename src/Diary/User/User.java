@@ -1,4 +1,4 @@
-package FirstTest.User;
+package Diary.User;
 
 public class User {
     private String profileImagePath;

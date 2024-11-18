@@ -1,4 +1,6 @@
-package FirstTest.UI;
+package Diary.UI;
+
+import Diary.DataBase.DataBase;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -128,62 +130,94 @@ public class SignUpScreen extends JFrame {
         });
 
         // 회원가입 버튼
+//        signupButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+////                String imagePath = imageLabel.getText();
+//                String userId = userIdField.getText();
+//                String name = nameField.getText();
+//                String email = emailField.getText();
+//                String password = String.valueOf(passwordField.getPassword());
+//                String confirmPassword = String.valueOf(confirmPasswordField.getPassword());
+//
+//                // 입력해야 하는 값들을 입력하지 않았을 때
+//                // id 입력 x
+//                if(userId.isEmpty()){
+//                    JOptionPane.showMessageDialog(SignUpScreen.this, "아이디를 입력해주세요");
+//                    return;
+//                }
+//                // 이름 입력 x
+//                if(name.isEmpty()){
+//                    JOptionPane.showMessageDialog(SignUpScreen.this, "이름을 입력해주세요");
+//                    return;
+//                }
+//                // 이메일 입력 x
+//                if(email.isEmpty()){
+//                    JOptionPane.showMessageDialog(SignUpScreen.this, "이메일을 입력해주세요");
+//                    return;
+//                }
+//                // 비밀번호 입력 x
+//                if(password.isEmpty()){
+//                    JOptionPane.showMessageDialog(SignUpScreen.this, "비밀번호를 입력해주세요");
+//                }
+//                // 비밀번호 확인 입력 x
+//                if(confirmPassword.isEmpty()){
+//                    JOptionPane.showMessageDialog(SignUpScreen.this, "비밀번호 확인란을 입력해주세요");
+//                    return;
+//                }
+//
+//                // 비밀번호가 틀렸을 때
+//                if(!password.equals(confirmPassword)) {
+//                    JOptionPane.showMessageDialog(SignUpScreen.this, "비밀번호가 일치하지 않습니다.");
+//                    return;
+//                }
+//                // 이미지를 넣지 않았을 때 ( 기본 이미지 설정 )
+//                if(imagePath == null || imagePath.isEmpty()){
+//                    imagePath = defaultImagePath;
+//                }
+//                // 중복확인 버튼을 눌렀을 때 로직 추가해야 함
+//
+//                // 중복확인을 안했을 때 로직 추가해야 함
+//
+//                // 회원가입 정보를 DB에 저장하는 로직을 추가해야 함
+//
+//                // 로그인 화면으로 이동하는 로직
+//                new LogInScreen();
+//                dispose();
+//            }
+//        });
+
         signupButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                String imagePath = imageLabel.getText();
                 String userId = userIdField.getText();
                 String name = nameField.getText();
                 String email = emailField.getText();
                 String password = String.valueOf(passwordField.getPassword());
                 String confirmPassword = String.valueOf(confirmPasswordField.getPassword());
 
-                // 입력해야 하는 값들을 입력하지 않았을 때
-                // id 입력 x
-                if(userId.isEmpty()){
-                    JOptionPane.showMessageDialog(SignUpScreen.this, "아이디를 입력해주세요");
-                    return;
-                }
-                // 이름 입력 x
-                if(name.isEmpty()){
-                    JOptionPane.showMessageDialog(SignUpScreen.this, "이름을 입력해주세요");
-                    return;
-                }
-                // 이메일 입력 x
-                if(email.isEmpty()){
-                    JOptionPane.showMessageDialog(SignUpScreen.this, "이메일을 입력해주세요");
-                    return;
-                }
-                // 비밀번호 입력 x
-                if(password.isEmpty()){
-                    JOptionPane.showMessageDialog(SignUpScreen.this, "비밀번호를 입력해주세요");
-                }
-                // 비밀번호 확인 입력 x
-                if(confirmPassword.isEmpty()){
-                    JOptionPane.showMessageDialog(SignUpScreen.this, "비밀번호 확인란을 입력해주세요");
+                if (userId.isEmpty() || name.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+                    JOptionPane.showMessageDialog(SignUpScreen.this, "모든 필드를 입력해주세요.");
                     return;
                 }
 
-                // 비밀번호가 틀렸을 때
-                if(!password.equals(confirmPassword)) {
+                if (!password.equals(confirmPassword)) {
                     JOptionPane.showMessageDialog(SignUpScreen.this, "비밀번호가 일치하지 않습니다.");
                     return;
                 }
-                // 이미지를 넣지 않았을 때 ( 기본 이미지 설정 )
-                if(imagePath == null || imagePath.isEmpty()){
-                    imagePath = defaultImagePath;
+
+                String imagePath = "default/path/to/image"; // 기본 이미지 경로
+
+                boolean success = DataBase.insertUser(userId, name, email, password, imagePath);
+
+                if (success) {
+                    JOptionPane.showMessageDialog(SignUpScreen.this, "회원가입이 완료되었습니다!");
+                } else {
+                    JOptionPane.showMessageDialog(SignUpScreen.this, "회원가입 중 오류가 발생했습니다.");
                 }
-                // 중복확인 버튼을 눌렀을 때 로직 추가해야 함
-
-                // 중복확인을 안했을 때 로직 추가해야 함
-                
-                // 회원가입 정보를 DB에 저장하는 로직을 추가해야 함
-
-                // 로그인 화면으로 이동하는 로직
-                new LogInScreen();
-                dispose();
             }
         });
+
 
         setVisible(true);
     }
