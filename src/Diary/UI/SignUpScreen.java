@@ -14,6 +14,7 @@ import java.io.File;
 public class SignUpScreen extends JFrame {
     private String imagePath; // 이미지 경로 저장 변수
     private final String defaultImagePath = "defaultImage.png"; // 기본 이미지 경로
+    private boolean isUserIdAvailable = false;  // 중복 확인 버튼 눌렀을 때 true
 
     public SignUpScreen() {
         // 기본 설정
@@ -44,7 +45,7 @@ public class SignUpScreen extends JFrame {
                 fileChooser.setFileFilter(new FileNameExtensionFilter("이미지 파일", "jpg", "jpeg", "png", "gif"));
 
                 int result = fileChooser.showOpenDialog(SignUpScreen.this);
-                if(result == JFileChooser.APPROVE_OPTION) {
+                if (result == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
                     String imagePath = selectedFile.getAbsolutePath(); // 이미지 경로 저장
 
@@ -70,7 +71,7 @@ public class SignUpScreen extends JFrame {
         idPanel.add(checkDuplicateButton);
 
         // 이름 입력 패널
-        JPanel namePanel =  new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel namePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel nameLabel = new JLabel("이름 : ");
         JTextField nameField = new JTextField(15);
         namePanel.add(nameLabel);
@@ -105,7 +106,6 @@ public class SignUpScreen extends JFrame {
         buttonPanel.add(backButton);
         buttonPanel.add(signupButton);
 
-        // 패널 추가
         add(imagePanel);
         add(idPanel);
         add(namePanel);
@@ -114,7 +114,6 @@ public class SignUpScreen extends JFrame {
         add(passwordConfirmPanel);
         add(buttonPanel);
 
-        // 하단 여백
         add(Box.createVerticalStrut(30));
 
         // 중복확인 버튼
@@ -128,12 +127,12 @@ public class SignUpScreen extends JFrame {
                     return;
                 }
 
-                boolean isDuplicate = DataBase.isUserIdDuplicate(userId);
-
-                if (isDuplicate) {
+                if (DataBase.isUserIdDuplicate(userId)) { // 중복된 아이디일 경우
                     JOptionPane.showMessageDialog(SignUpScreen.this, "이미 존재하는 아이디입니다.");
-                } else {
+                    isUserIdAvailable = false;
+                } else { // 중복되지 않는 아이디일 경우
                     JOptionPane.showMessageDialog(SignUpScreen.this, "사용 가능한 아이디입니다.");
+                    isUserIdAvailable = true;
                 }
             }
         });
