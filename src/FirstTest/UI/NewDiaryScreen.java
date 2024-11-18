@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
+
 public class NewDiaryScreen extends JFrame {
     private String imagePath = "파일경로.jpg";
 

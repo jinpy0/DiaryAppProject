@@ -19,8 +19,6 @@ public class SettingDiaryScreen extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new GridLayout(4, 1, 10, 10));
 
-        add(Box.createVerticalStrut(30));
-
         // 빈 패널
         JPanel emptyPanel = new JPanel();
 
@@ -28,12 +26,10 @@ public class SettingDiaryScreen extends JFrame {
         JPanel imagePanel = new JPanel();
         JLabel imageLabel = new JLabel();
         imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        imageLabel.setPreferredSize(new Dimension(100, 100));
+        imageLabel.setPreferredSize(new Dimension(120, 120));
         imageLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         imageLabel.setIcon(new ImageIcon(imagePath));
         imagePanel.add(imageLabel);
-
-        add(Box.createVerticalStrut(50));
 
         // 사진 선택 버튼 패널
         JPanel imgBtnPanel = new JPanel();

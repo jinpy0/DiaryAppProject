@@ -41,8 +41,14 @@ public class DiaryListScreen extends JFrame {
             userFeed.add(feedLabel);
         }
 
-        // 로그아웃, 일기 쓰기, 정보 수정 버튼 추가
+        // 이전 버튼 패널, 다음 버튼 패널
+        JPanel btnPanel1 = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JButton backBtn =  new JButton("이전");
+        JButton nextBtn = new JButton("다음");
+        btnPanel1.add(backBtn);
+        btnPanel1.add(nextBtn);
 
+        // 로그아웃, 일기 쓰기, 정보 수정 버튼 추가
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JButton logoutButton = new JButton("로그아웃");
         JButton newButton = new JButton("일기 작성");
@@ -78,9 +84,28 @@ public class DiaryListScreen extends JFrame {
                 dispose();
             }
         });
-        //
+
+        // 이전, 다음 버튼
+        backBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // 이전 페이지로 이동하는 로직
+            }
+        });
+
+        nextBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // 이전 페이지로 이동하는 로직
+            }
+        });
+
+
+
+
         add(imagePanel);
         add(userFeed);
+        add(btnPanel1);
         add(btnPanel);
 
         setVisible(true);
