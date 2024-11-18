@@ -117,8 +117,26 @@ public class SignUpScreen extends JFrame {
         // 하단 여백
         add(Box.createVerticalStrut(30));
 
-        // 중복확인 버튼 구현해야 함
+        // 중복확인 버튼
+        checkDuplicateButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String userId = userIdField.getText();
 
+                if (userId.isEmpty()) {
+                    JOptionPane.showMessageDialog(SignUpScreen.this, "아이디를 입력해주세요.");
+                    return;
+                }
+
+                boolean isDuplicate = DataBase.isUserIdDuplicate(userId);
+
+                if (isDuplicate) {
+                    JOptionPane.showMessageDialog(SignUpScreen.this, "이미 존재하는 아이디입니다.");
+                } else {
+                    JOptionPane.showMessageDialog(SignUpScreen.this, "사용 가능한 아이디입니다.");
+                }
+            }
+        });
 
         // 뒤로가기 버튼
         backButton.addActionListener(new ActionListener() {
