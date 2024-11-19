@@ -1,5 +1,7 @@
 package Diary.UI;
 
+import Diary.DataBase.User;
+
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
@@ -8,7 +10,13 @@ import java.awt.event.ActionListener;
 import java.io.File;
 
 public class SettingScreen extends JFrame {
-    public SettingScreen() {
+
+    private User user; // User 객체를 저장할 변수
+
+    // 생성자에서 User 객체를 받도록 수정
+    public SettingScreen(User user) {
+        this.user = user; // 전달받은 User 객체를 클래스 필드에 저장
+
         setTitle("설정 화면");
         setSize(350, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -19,7 +27,7 @@ public class SettingScreen extends JFrame {
         JPanel imagePanel = new JPanel();
         JLabel imageLabel = new JLabel(); // 기본 이미지 받아오기 설정해야함
         imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        imageLabel.setPreferredSize(new Dimension(120,120));
+        imageLabel.setPreferredSize(new Dimension(120, 120));
         imageLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         imagePanel.add(imageLabel);
 
@@ -31,6 +39,7 @@ public class SettingScreen extends JFrame {
         JPanel idPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel setIdLabel = new JLabel("아이디 수정 : ");
         JTextField setIdField = new JTextField(15);
+        setIdField.setText(user.getUser_id()); // 기존 아이디 설정
         JButton checkIdBtn = new JButton("중복 확인");
         idPanel.add(setIdLabel);
         idPanel.add(setIdField);
@@ -40,6 +49,7 @@ public class SettingScreen extends JFrame {
         JPanel setEmailPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel emailLabel = new JLabel("이메일 수정 : ");
         JTextField setEmailField = new JTextField(15);
+        setEmailField.setText(user.getEmail()); // 기존 이메일 설정
         setEmailPanel.add(emailLabel);
         setEmailPanel.add(setEmailField);
 
@@ -56,6 +66,7 @@ public class SettingScreen extends JFrame {
         JTextField setPasswordField = new JTextField(15);
         setPasswordPanel.add(setPasswordLabel);
         setPasswordPanel.add(setPasswordField);
+
         // 수정할 비밀번호 확인 패널
         JPanel checkPasswordPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel checkPasswordLabel = new JLabel("비밀번호 확인 : ");
@@ -69,7 +80,6 @@ public class SettingScreen extends JFrame {
         JButton setBtn = new JButton("정보 수정");
         btnPanel.add(backBtn);
         btnPanel.add(setBtn);
-        // 버튼 구현
 
         // 사진 선택 버튼
         selectImageBtn.addActionListener(new ActionListener() {
@@ -87,6 +97,9 @@ public class SettingScreen extends JFrame {
                     Image image = imageIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
                     imageLabel.setIcon(new ImageIcon(image));
                     imageLabel.setText(null);
+
+                    // 변경된 이미지 경로를 user 객체에 저장 (추가 기능 구현)
+                    user.setProfileImage(path);
                 }
             }
         });
@@ -101,7 +114,7 @@ public class SettingScreen extends JFrame {
         // 뒤로가기 버튼
         backBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                new NewDiaryScreen();
+                new NewDiaryScreen(user); // 뒤로가기 버튼에서 user 정보를 NewDiaryScreen으로 전달
                 dispose();
             }
         });
@@ -109,8 +122,34 @@ public class SettingScreen extends JFrame {
         // 정보 수정 버튼
         setBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // 수정하는 로직 추가 필요
-                new DiaryListScreen();
+                // 아이디, 이메일, 비밀번호 수정 처리
+                String newId = setIdField.getText();
+                String newEmail = setEmailField.getText();
+                String currentPassword = crtPasswordField.getText();
+                String newPassword = setPasswordField.getText();
+                String confirmPassword = checkPasswordField.getText();
+
+                // 비밀번호 변경 확인
+                if (!newPassword.equals(confirmPassword)) {
+                    JOptionPane.showMessageDialog(SettingScreen.this, "비밀번호가 일치하지 않습니다.");
+                    return;
+                }
+
+                // 비밀번호 확인 로직 필요 (현재 비밀번호 확인)
+                if (!user.getPassword().equals(currentPassword)) {
+                    JOptionPane.showMessageDialog(SettingScreen.this, "현재 비밀번호가 틀립니다.");
+                    return;
+                }
+
+                // 정보 수정 처리
+                user.setUser_id(newId);
+                user.setEmail(newEmail);
+                user.setPassword(newPassword); // 비밀번호 변경
+
+                JOptionPane.showMessageDialog(SettingScreen.this, "정보가 수정되었습니다.");
+
+                // 수정 후 DiaryListScreen으로 이동
+                new DiaryListScreen(user); // user 정보를 DiaryListScreen으로 전달
                 dispose();
             }
         });
@@ -128,6 +167,7 @@ public class SettingScreen extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(SettingScreen::new);
+        // 임시로 User 객체를 전달하여 설정 화면 실행
+        SwingUtilities.invokeLater(() -> new SettingScreen(new User("user123", "홍길동", "email@example.com", "password123")));
     }
 }

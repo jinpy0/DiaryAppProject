@@ -1,9 +1,13 @@
 package Diary.UI;
 
+import Diary.DataBase.DataBase;
+import Diary.DataBase.User;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 
 public class LogInScreen extends JFrame {
     public LogInScreen() {
@@ -38,15 +42,33 @@ public class LogInScreen extends JFrame {
         passwordPanel.add(loginButton); // 로그인 버튼을 비밀번호 패널에 추가
         add(passwordPanel); // 비밀번호 패널 추가
 
-        // 로그인 버튼 클릭 이벤트
+        // 로그인 버튼
+        // 로그인 성공 시 User 객체 생성 후 DiaryListScreen으로 전달
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String username = userField.getText();
                 String password = new String(passwordField.getPassword());
-                System.out.println("로그인 시도: " + username + " / 비밀번호: " + password);
+
+                // 로그인 정보 확인
+                try {
+                    boolean loginSuccess = DataBase.verifyUserCredentials(username, password);
+                    if (loginSuccess) {
+                        // User 객체 생성 (실제로는 DB에서 해당 사용자 정보를 받아와야 합니다)
+                        User user = new User(username, "사용자 이름", "사용자 이메일", "사용자 이미지 경로");
+
+                        // DiaryListScreen으로 사용자 정보 전달
+                        new DiaryListScreen(user);
+                        dispose(); // 현재 로그인 화면 닫기
+                    } else {
+                        JOptionPane.showMessageDialog(LogInScreen.this, "아이디 또는 비밀번호가 일치하지 않습니다.");
+                    }
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(LogInScreen.this, "데이터베이스 오류: " + ex.getMessage());
+                }
             }
         });
+
 
         // 빈 공간 추가 (하단 여백)
         add(Box.createVerticalStrut(20)); // 높이 20px의 빈 공간 추가

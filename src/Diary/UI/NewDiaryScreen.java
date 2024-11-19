@@ -1,5 +1,7 @@
 package Diary.UI;
 
+import Diary.DataBase.User;
+
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
@@ -7,11 +9,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
-
 public class NewDiaryScreen extends JFrame {
     private String imagePath = "파일경로.jpg";
+    private User user; // User 객체를 저장할 변수
 
-    public NewDiaryScreen() {
+    // 생성자에서 User 객체를 받도록 수정
+    public NewDiaryScreen(User user) {
+        this.user = user; // 전달받은 User 객체를 클래스 필드에 저장
+
         setTitle("일기 작성 페이지");
         setSize(350, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -55,7 +60,7 @@ public class NewDiaryScreen extends JFrame {
                 fileChooser.setFileFilter(new FileNameExtensionFilter("이미지 파일", "jpg", "jpeg", "png", "gif"));
 
                 int result = fileChooser.showOpenDialog(NewDiaryScreen.this);
-                if(result == JFileChooser.APPROVE_OPTION) {
+                if (result == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
                     imagePath = selectedFile.getAbsolutePath();
 
@@ -68,12 +73,12 @@ public class NewDiaryScreen extends JFrame {
         });
 
         backBtn.addActionListener(e -> {
-            new DiaryListScreen();
+            new DiaryListScreen(user); // 뒤로가기 버튼에서 user 정보를 DiaryListScreen으로 전달
             dispose();
         });
 
         nextBtn.addActionListener(e -> {
-            new NewDiaryScreen2();
+            new NewDiaryScreen2(user); // 다음 버튼에서 user 정보를 NewDiaryScreen2로 전달
             dispose();
         });
 
@@ -81,6 +86,6 @@ public class NewDiaryScreen extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(NewDiaryScreen::new);
+        SwingUtilities.invokeLater(() -> new NewDiaryScreen(new User("user123", "홍길동", "email@example.com"))); // 임시로 User 객체를 전달
     }
 }

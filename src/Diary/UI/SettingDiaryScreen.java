@@ -1,5 +1,8 @@
 package Diary.UI;
 
+import Diary.DataBase.DataBase;
+import Diary.DataBase.Diary;
+import Diary.DataBase.User;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -8,19 +11,36 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
-// 일기를 보다가 수정할 수 있는 페이지
 public class SettingDiaryScreen extends JFrame {
-    private String imagePath = "파일경로.jpg";
+    private String imagePath = "파일경로.jpg"; // 이미지 경로
+    private Diary selectedDiary; // 선택된 일기 객체
+    private User user; // 사용자 객체
 
-    public SettingDiaryScreen() {
+    // 생성자에서 Diary와 User 객체를 받아오기
+    public SettingDiaryScreen(User user, Diary diary) {
+        this.user = user; // 사용자 객체 설정
+        this.selectedDiary = diary; // 수정할 일기 객체 설정
+
         setTitle("일기 수정 페이지");
         setSize(350, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setLayout(new GridLayout(4, 1, 10, 10));
+        setLayout(new GridLayout(5, 1, 10, 10));
 
-        // 빈 패널
-        JPanel emptyPanel = new JPanel();
+        // 제목 수정 패널
+        JPanel titlePanel = new JPanel();
+        JLabel titleLabel = new JLabel("제목: ");
+        JTextField titleField = new JTextField(diary.getTitle(), 20); // 기존 제목을 텍스트 필드로 표시
+        titlePanel.add(titleLabel);
+        titlePanel.add(titleField);
+
+        // 내용 수정 패널
+        JPanel contentPanel = new JPanel();
+        JLabel contentLabel = new JLabel("내용: ");
+        JTextArea contentArea = new JTextArea(diary.getContent(), 5, 20); // 기존 내용을 텍스트 에어리어로 표시
+        JScrollPane scrollPane = new JScrollPane(contentArea);
+        contentPanel.add(contentLabel);
+        contentPanel.add(scrollPane);
 
         // 사진 선택 패널
         JPanel imagePanel = new JPanel();
@@ -28,7 +48,7 @@ public class SettingDiaryScreen extends JFrame {
         imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
         imageLabel.setPreferredSize(new Dimension(120, 120));
         imageLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        imageLabel.setIcon(new ImageIcon(imagePath));
+        imageLabel.setIcon(new ImageIcon(imagePath)); // 초기 이미지 설정
         imagePanel.add(imageLabel);
 
         // 사진 선택 버튼 패널
@@ -43,13 +63,15 @@ public class SettingDiaryScreen extends JFrame {
         btnPanel.add(backBtn);
         btnPanel.add(nextBtn);
 
-        add(emptyPanel);
+        // 컴포넌트들 추가
+        add(titlePanel);
+        add(contentPanel);
         add(imagePanel);
         add(imgBtnPanel);
         add(btnPanel);
         setVisible(true);
 
-
+        // 사진 선택 버튼 이벤트 처리
         imgBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -60,7 +82,7 @@ public class SettingDiaryScreen extends JFrame {
                 int result = fileChooser.showOpenDialog(SettingDiaryScreen.this);
                 if(result == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
-                    String imagePath = selectedFile.getAbsolutePath(); // 이미지 경로 저장
+                    imagePath = selectedFile.getAbsolutePath(); // 이미지 경로 저장
 
                     // 이미지 표시
                     ImageIcon imageIcon = new ImageIcon(imagePath);
@@ -71,25 +93,32 @@ public class SettingDiaryScreen extends JFrame {
             }
         });
 
+        // 뒤로가기 버튼 이벤트 처리
         backBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new DiaryListScreen();
+                new DiaryListScreen(user); // User 객체 전달
                 dispose();
             }
         });
 
+        // 다음 버튼 이벤트 처리
         nextBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new SettingDiaryScreen2();
+                // 수정된 제목과 내용 저장
+                selectedDiary.setTitle(titleField.getText()); // 수정된 제목 저장
+                selectedDiary.setContent(contentArea.getText()); // 수정된 내용 저장
+                selectedDiary.setImagePath(imagePath); // 수정된 이미지 경로 저장
+
+                new SettingDiaryScreen2(user, selectedDiary); // User 객체와 수정된 Diary 객체 전달
                 dispose();
             }
         });
     }
 
-
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(SettingDiaryScreen::new);
+        // 예시로 User 객체와 Diary 객체 전달
+        SwingUtilities.invokeLater(() -> new SettingDiaryScreen(new User("user123", "홍길동", "hong@domain.com"), new Diary("제목", "내용", "이미지 경로")));
     }
 }

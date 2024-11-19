@@ -1,5 +1,6 @@
 package Diary.UI;
 
+import Diary.DataBase.User;
 import com.github.lgooddatepicker.components.DatePicker;
 import com.github.lgooddatepicker.components.DatePickerSettings;
 import com.github.lgooddatepicker.optionalusertools.DateChangeListener;
@@ -16,8 +17,12 @@ public class NewDiaryScreen2 extends JFrame {
     private JLabel dateLabel;
     private JButton dateBtn;
     private DatePicker datePicker;
+    private User user; // User 객체를 저장할 변수
 
-    public NewDiaryScreen2() {
+    // 생성자에서 User 객체를 받도록 수정
+    public NewDiaryScreen2(User user) {
+        this.user = user; // 전달받은 User 객체를 클래스 필드에 저장
+
         setTitle("일기쓰기 화면 2");
         setSize(350, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -74,7 +79,7 @@ public class NewDiaryScreen2 extends JFrame {
                 LocalDate selectedDate = dateChangeEvent.getNewDate();
                 if(selectedDate != null) {
                     dateLabel.setText(selectedDate.toString());
-                }else{
+                } else {
                     dateLabel.setText("날짜를 선택해주세요");
                 }
                 datePicker.setVisible(false);
@@ -83,7 +88,7 @@ public class NewDiaryScreen2 extends JFrame {
 
         backBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                new NewDiaryScreen();
+                new NewDiaryScreen(user); // 뒤로가기 버튼에서 user 정보를 NewDiaryScreen으로 전달
                 dispose();
             }
         });
@@ -117,7 +122,7 @@ public class NewDiaryScreen2 extends JFrame {
                 // 업로드 하는 기능 구현?
 
                 // 창 닫기
-                new DiaryListScreen();
+                new DiaryListScreen(user); // user 정보를 DiaryListScreen으로 전달
                 dispose();
             }
         });
@@ -131,6 +136,6 @@ public class NewDiaryScreen2 extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(NewDiaryScreen2::new);
+        SwingUtilities.invokeLater(() -> new NewDiaryScreen2(new User("user123", "홍길동", "email@example.com"))); // 임시로 User 객체를 전달
     }
 }

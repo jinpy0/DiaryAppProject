@@ -1,50 +1,61 @@
 package Diary.UI;
 
+import Diary.DataBase.DataBase;
+import Diary.DataBase.Diary;
+import Diary.DataBase.User;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 public class DiaryListScreen extends JFrame {
+    private User user; // 사용자 객체
+    private List<Diary> diaries; // 일기 목록
 
-    public DiaryListScreen() { // User 클래스의 인스턴스를 매개변수로 받아와서 리스트 만들기?
+    // 생성자에서 User 객체를 받아오기
+    public DiaryListScreen(User user) {
+        this.user = user; // 전달된 User 객체 설정
+        this.diaries = DataBase.getDiaries(user.getUser_id()); // 사용자 일기 목록 불러오기
+
         setTitle("일기 목록");
         setSize(350, 600);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
-        // JPanel imagePanel 이미지 어떻게 받아올 지 (일단 빈 박스로 구현)
-        // 이미지, 회원 아이디 출력W
-        // 이미지 추가
+        // 사용자 정보 패널 설정
         JPanel imagePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel imageLabel = new JLabel();
         imageLabel.setHorizontalAlignment(SwingConstants.LEFT);
         imageLabel.setPreferredSize(new Dimension(100, 100));
         imageLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         imagePanel.add(imageLabel);
-        // 아이디 추가
-        JLabel userIdLabel = new JLabel("사용자 ID");
+
+        JLabel userIdLabel = new JLabel(user.getUser_id()); // User 객체에서 ID를 가져옴
         userIdLabel.setHorizontalAlignment(SwingConstants.CENTER);
         imagePanel.add(userIdLabel);
 
-        // 사용자 피드
-        JPanel userFeed = new JPanel(new GridLayout(3, 3, 5, 5)); // 5,5는 간격 조절
-        for (int i = 0; i < 9; i++) {
-            JLabel feedLabel = new JLabel();
-            feedLabel.setPreferredSize(new Dimension(100, 100));
-            feedLabel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-            feedLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            
-            // DB 연동 시 수정해야 함
-            // 다른 사진을 넣어야 하는데 for 문으로 되는지????
-            feedLabel.setIcon(new ImageIcon("파일 경로.jpg"));
-            userFeed.add(feedLabel);
+        // 사용자 피드 패널 (일기 목록 표시)
+        JPanel userFeed = new JPanel(new GridLayout(3, 3, 5, 5));
+        if (diaries.isEmpty()) {
+            JLabel noDiaryLabel = new JLabel("작성한 일기가 없습니다.");
+            noDiaryLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            userFeed.add(noDiaryLabel);
+        } else {
+            for (Diary diary : diaries) {
+                JLabel feedLabel = new JLabel(diary.getTitle());
+                feedLabel.setPreferredSize(new Dimension(100, 100));
+                feedLabel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+                feedLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                userFeed.add(feedLabel);
+            }
         }
 
-        // 이전 버튼 패널, 다음 버튼 패널
+        // 이전, 다음 버튼 패널
         JPanel btnPanel1 = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JButton backBtn =  new JButton("이전");
+        JButton backBtn = new JButton("이전");
         JButton nextBtn = new JButton("다음");
         btnPanel1.add(backBtn);
         btnPanel1.add(nextBtn);
@@ -58,52 +69,50 @@ public class DiaryListScreen extends JFrame {
         btnPanel.add(newButton);
         btnPanel.add(settingButton);
 
-        // 버튼 이벤트
-        // 로그아웃 버튼
+        // 로그아웃 버튼 클릭
         logoutButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new LogInScreen();
+                new LogInScreen(); // 로그인 화면으로 이동
                 dispose();
             }
         });
 
-        // 일기 작성 버튼
+        // 일기 작성 버튼 클릭
         newButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new NewDiaryScreen();
+                new NewDiaryScreen(user); // User 객체 전달
                 dispose();
             }
         });
 
-        // 설정 버튼
+        // 설정 버튼 클릭
         settingButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new SettingScreen();
+                new SettingScreen(user); // User 객체 전달
                 dispose();
             }
         });
 
-        // 이전, 다음 버튼
+        // 이전 버튼 클릭 (기능 구현 필요)
         backBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // 이전 페이지로 이동하는 로직
+                // 이전 페이지로 이동하는 로직 (예: 첫 페이지로 돌아가기)
             }
         });
 
+        // 다음 버튼 클릭 (기능 구현 필요)
         nextBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // 이전 페이지로 이동하는 로직
+                // 다음 페이지로 이동하는 로직 (예: 더 많은 일기를 보여주기)
             }
         });
 
-
-
-
+        // 패널을 JFrame에 추가
         add(imagePanel);
         add(userFeed);
         add(btnPanel1);
@@ -113,6 +122,7 @@ public class DiaryListScreen extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(DiaryListScreen::new);
+        // User 객체를 예시로 전달하여 DiaryListScreen 실행
+        SwingUtilities.invokeLater(() -> new DiaryListScreen(new User("user123", "홍길동", "hong@domain.com")));
     }
 }
