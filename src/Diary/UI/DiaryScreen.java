@@ -1,8 +1,8 @@
 package Diary.UI;
 
-import Diary.DataBase.DataBase;
-import Diary.DataBase.Diary; // Diary 클래스를 import
-import Diary.DataBase.User;
+import Diary.DataBase.DBConnection;
+import Diary.DataBase.Dto.DiaryDTO;
+import Diary.DataBase.Dto.UserDTO;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,11 +10,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class DiaryScreen extends JFrame {
-    private User user; // 사용자 객체
-    private Diary diary; // 일기 객체
+    private UserDTO user; // 사용자 객체
+    private DiaryDTO diary; // 일기 객체
 
     // 생성자에서 User 객체와 Diary 객체를 받아오기
-    public DiaryScreen(User user, Diary diary) {
+    public DiaryScreen(UserDTO user, DiaryDTO diary) {
         this.user = user; // 전달된 User 객체 설정
         this.diary = diary; // 전달된 Diary 객체 설정
 
@@ -39,13 +39,13 @@ public class DiaryScreen extends JFrame {
 
         // 제목 패널
         JPanel titlePanel = new JPanel();
-        JLabel titleLabel = new JLabel(diary.getTitle()); // Diary 객체에서 제목 가져오기
+        JLabel titleLabel = new JLabel(diary.getDiaryTitle()); // Diary 객체에서 제목 가져오기
         titleLabel.setFont(new Font("Arial", Font.BOLD, 16)); // 제목 폰트 설정
         titlePanel.add(titleLabel);
 
         // 내용 패널 (스크롤 가능한 영역으로 내용 표시)
         JPanel contentPanel = new JPanel();
-        JTextArea contentTextArea = new JTextArea(diary.getContent()); // Diary 객체에서 내용 가져오기
+        JTextArea contentTextArea = new JTextArea(diary.getDiaryContent()); // Diary 객체에서 내용 가져오기
         contentTextArea.setEditable(false); // 내용 수정 불가
         contentTextArea.setLineWrap(true); // 줄바꿈 처리
         contentTextArea.setWrapStyleWord(true); // 단어 단위로 줄바꿈
@@ -74,7 +74,7 @@ public class DiaryScreen extends JFrame {
         backBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new DiaryListScreen(user); // User 객체 전달
+                new DiaryListScreen(user, DBConnection.getConnection()); // User 객체 전달
                 dispose();
             }
         });
@@ -93,6 +93,6 @@ public class DiaryScreen extends JFrame {
 
     public static void main(String[] args) {
         // User 객체와 Diary 객체를 예시로 전달하여 DiaryScreen 실행
-        SwingUtilities.invokeLater(() -> new DiaryScreen(new User("user123", "홍길동", "hong@domain.com"), new Diary("일기 제목", "일기 내용")));
+//        SwingUtilities.invokeLater(() -> new DiaryScreen(new User("user123", "홍길동", "hong@domain.com"), new Diary("일기 제목", "일기 내용")));
     }
 }

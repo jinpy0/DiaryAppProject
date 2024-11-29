@@ -1,6 +1,8 @@
 package Diary.UI;
 
-import Diary.DataBase.User;
+import Diary.DataBase.DBConnection;
+import Diary.DataBase.Dto.DiaryDTO;
+import Diary.DataBase.Dto.UserDTO;
 import com.github.lgooddatepicker.components.DatePicker;
 import com.github.lgooddatepicker.components.DatePickerSettings;
 import com.github.lgooddatepicker.optionalusertools.DateChangeListener;
@@ -12,18 +14,17 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.sql.Connection;
 import java.time.LocalDate;
-
-import Diary.DataBase.Diary;
 
 public class SettingDiaryScreen2 extends JFrame {
     private DatePicker datePicker;
-    private Diary selectedDiary; // 수정할 일기 객체
+    private DiaryDTO selectedDiary; // 수정할 일기 객체
     private String imagePath; // 수정된 이미지 경로
 
-    public SettingDiaryScreen2(User user, Diary diary) {
+    public SettingDiaryScreen2(UserDTO user, DiaryDTO diary) {
         this.selectedDiary = diary; // 수정할 일기 객체
-        this.imagePath = diary.getImagePath(); // 기존 이미지 경로
+        this.imagePath = diary.getDiaryImage(); // 기존 이미지 경로
 
         setTitle("일기 수정 페이지2");
         setSize(350, 600);
@@ -34,14 +35,14 @@ public class SettingDiaryScreen2 extends JFrame {
         // 제목 수정 패널
         JPanel titlePanel = new JPanel();
         JLabel titleLabel = new JLabel("제목 : ");
-        JTextField titleTextField = new JTextField(diary.getTitle(), 12); // 기존 제목을 텍스트 필드로 표시
+        JTextField titleTextField = new JTextField(diary.getDiaryTitle(), 12); // 기존 제목을 텍스트 필드로 표시
         titlePanel.add(titleLabel);
         titlePanel.add(titleTextField);
 
         // 날짜 선택 버튼과 레이블
         JPanel datePanel = new JPanel();
         JButton dateBtn = new JButton("날짜");
-        JLabel dateLabel = new JLabel(diary.getDate().toString()); // 기존 날짜 표시
+        JLabel dateLabel = new JLabel(diary.getCreateDate().toString()); // 기존 날짜 표시
         datePanel.add(dateBtn);
         datePanel.add(dateLabel);
 
@@ -85,7 +86,7 @@ public class SettingDiaryScreen2 extends JFrame {
 
         // 일기 내용 수정 텍스트 에어리어
         JPanel textPanel = new JPanel();
-        JTextArea textArea = new JTextArea(diary.getContent(), 20, 30); // 기존 내용 표시
+        JTextArea textArea = new JTextArea(diary.getDiaryContent(), 20, 30); // 기존 내용 표시
         JScrollPane scrollPane = new JScrollPane(textArea);
         textPanel.add(scrollPane);
 
@@ -119,7 +120,7 @@ public class SettingDiaryScreen2 extends JFrame {
         // 뒤로가기 버튼 이벤트
         backBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                new DiaryListScreen(user); // User 객체 전달
+                new DiaryListScreen(user, DBConnection.getConnection()); // User 객체 전달
                 dispose();
             }
         });
@@ -149,10 +150,10 @@ public class SettingDiaryScreen2 extends JFrame {
                 }
 
                 // 수정된 일기 저장
-                selectedDiary.setTitle(title); // 제목 수정
-                selectedDiary.setContent(text); // 내용 수정
-                selectedDiary.setDate(selectedDate); // 날짜 수정
-                selectedDiary.setImagePath(imagePath); // 이미지 경로 수정
+                selectedDiary.setDiaryTitle(title); // 제목 수정
+                selectedDiary.setDiaryContent(text); // 내용 수정
+                selectedDiary.setUpdateDate(selectedDate); // 날짜 수정
+                selectedDiary.setDiaryImage(imagePath); // 이미지 경로 수정
 
                 // 수정 완료 메시지
                 JOptionPane.showMessageDialog(SettingDiaryScreen2.this, "수정완료");
@@ -160,7 +161,7 @@ public class SettingDiaryScreen2 extends JFrame {
                 // 수정된 데이터를 DB에 저장하는 기능 구현 필요 (예: DB 업데이트)
 
                 // 창 닫기
-                new DiaryListScreen(user); // 일기 목록 화면으로 이동
+                new DiaryListScreen(user, DBConnection.getConnection()); // 일기 목록 화면으로 이동
                 dispose();
             }
         });
@@ -176,6 +177,6 @@ public class SettingDiaryScreen2 extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new SettingDiaryScreen2(new User("user123", "홍길동", "hong@domain.com"), new Diary("제목", "내용", "이미지 경로", LocalDate.now())));
+//        SwingUtilities.invokeLater(() -> new SettingDiaryScreen2(new User("user123", "홍길동", "hong@domain.com"), new Diary("제목", "내용", "이미지 경로", LocalDate.now())));
     }
 }

@@ -1,33 +1,34 @@
 package Diary.UI;
 
+import Diary.DataBase.DBConnection;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
 
 public class FindIdPassWordScreen extends JFrame {
-    public FindIdPassWordScreen() {
-        // 기본 설정
+    public FindIdPassWordScreen(Connection conn) {
         setTitle("아이디 / 비밀번호 찾기 화면");
-        setSize(350, 600); // 사이즈를 350 x 600으로 변경
+        setSize(350, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null); // 화면 중앙에 위치
+        setLocationRelativeTo(null);
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
-//        ID 찾기 ( Email 입력 )
-        JPanel findIdPanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); // 이메일 입력 패널
+        JPanel findIdPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel inputEmail = new JLabel("이메일 : ");
         JTextField inputEmailField = new JTextField(20);
         findIdPanel.add(inputEmail);
         findIdPanel.add(inputEmailField);
 
-        JPanel userNamePanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); // 사용자 이름 입력 패널
+        JPanel userNamePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel inputName = new JLabel("이름 : ");
         JTextField inputNameField = new JTextField(20);
         userNamePanel.add(inputName);
         userNamePanel.add(inputNameField);
 
-        JPanel findIdButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); // 버튼만 있는 패널
+        JPanel findIdButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JButton idBtn = new JButton("아이디 찾기");
         findIdButtonPanel.add(idBtn);
 
@@ -54,17 +55,12 @@ public class FindIdPassWordScreen extends JFrame {
         backButtonPanel.add(backButton);
         findPasswordButtonPanel.add(passwordBtn);
 
-        // 아이디 찾기 추가
         add(findIdPanel);
         add(userNamePanel);
         add(findIdButtonPanel);
-
-        // 비밀번호 찾기 추가
         add(inputIdPanel);
         add(inputEmailPanel);
         add(findPasswordButtonPanel);
-
-//        뒤로가기 추가
         add(backButtonPanel);
 
         backButton.addActionListener(new ActionListener() {
@@ -77,7 +73,7 @@ public class FindIdPassWordScreen extends JFrame {
 
         setVisible(true);
     }
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(FindIdPassWordScreen::new);
-    }
+//    public static void main(String[] args) {
+//        SwingUtilities.invokeLater(FindIdPassWordScreen::new);
+//    }
 }

@@ -1,6 +1,8 @@
 package Diary.UI;
 
-import Diary.DataBase.DataBase;
+import Diary.DataBase.DBConnection;
+import Diary.DataBase.Dao.UserDAO;
+import Diary.DataBase.Dto.UserDTO;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -8,16 +10,17 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-
-// 왼쪽으로 이동시켜야 함, 간격 추가
+import java.sql.Connection;
 
 public class SignUpScreen extends JFrame {
-    private String imagePath = null; // 선택한 이미지 경로 저장 변수
-    private final String defaultImagePath = "C:/JavaSource/DiaryProject/src/Diary/default_image.png"; // 기본 이미지 경로
-    private boolean isUserIdAvailable = false;  // 중복 확인 버튼 눌렀을 때 true
+    private String imagePath = null;
 
-    public SignUpScreen() {
-        // 기본 설정
+    // 기본 이미지 경로
+    private final String defaultImagePath = "C:/JavaSource/DiaryProject/src/Diary/default_image.png";
+
+    private boolean isUserIdAvailable = false;
+
+    public SignUpScreen(Connection conn) {
         setTitle("회원가입 화면");
         setSize(350, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -47,13 +50,12 @@ public class SignUpScreen extends JFrame {
                 int result = fileChooser.showOpenDialog(SignUpScreen.this);
                 if (result == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
-                    imagePath = selectedFile.getAbsolutePath(); // 선택된 이미지 경로 저장
+                    imagePath = selectedFile.getAbsolutePath();
 
-                    // 이미지 표시
                     ImageIcon imageIcon = new ImageIcon(imagePath);
                     Image image = imageIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
                     imageLabel.setIcon(new ImageIcon(image));
-                    imageLabel.setText(null); // 기존 텍스트 제거
+                    imageLabel.setText(null);
                 }
             }
         });
@@ -80,21 +82,21 @@ public class SignUpScreen extends JFrame {
         // 이메일 입력 패널
         JPanel emailPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel emailLabel = new JLabel("이메일 : ");
-        JTextField emailField = new JTextField(15); // 열 수를 10으로 설정하여 폭 조절
+        JTextField emailField = new JTextField(15);
         emailPanel.add(emailLabel);
         emailPanel.add(emailField);
 
         // 비밀번호 입력 패널
         JPanel passwordPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel passwordLabel = new JLabel("비밀번호:");
-        JPasswordField passwordField = new JPasswordField(15); // 열 수를 10으로 설정하여 폭 조절
+        JPasswordField passwordField = new JPasswordField(15);
         passwordPanel.add(passwordLabel);
         passwordPanel.add(passwordField);
 
         // 비밀번호 확인 입력 패널
         JPanel passwordConfirmPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel confirmPasswordLabel = new JLabel("비밀번호 확인:");
-        JPasswordField confirmPasswordField = new JPasswordField(15); // 열 수를 10으로 설정하여 폭 조절
+        JPasswordField confirmPasswordField = new JPasswordField(15);
         passwordConfirmPanel.add(confirmPasswordLabel);
         passwordConfirmPanel.add(confirmPasswordField);
 
@@ -116,21 +118,22 @@ public class SignUpScreen extends JFrame {
 
         add(Box.createVerticalStrut(30));
 
+        UserDAO userDAO = new UserDAO(conn);
+
         // 중복확인 버튼
         checkDuplicateButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String userId = userIdField.getText();
-
                 if (userId.isEmpty()) {
                     JOptionPane.showMessageDialog(SignUpScreen.this, "아이디를 입력해주세요.");
+                    isUserIdAvailable = false;
                     return;
                 }
-
-                if (DataBase.isUserIdDuplicate(userId)) { // 중복된 아이디일 경우
+                if (userDAO.isUserIdOverlap(userId)) {
                     JOptionPane.showMessageDialog(SignUpScreen.this, "이미 존재하는 아이디입니다.");
                     isUserIdAvailable = false;
-                } else { // 중복되지 않는 아이디일 경우
+                } else {
                     JOptionPane.showMessageDialog(SignUpScreen.this, "사용 가능한 아이디입니다.");
                     isUserIdAvailable = true;
                 }
@@ -159,7 +162,6 @@ public class SignUpScreen extends JFrame {
                     JOptionPane.showMessageDialog(SignUpScreen.this, "모든 필드를 입력해주세요.");
                     return;
                 }
-
                 if (!password.equals(confirmPassword)) {
                     JOptionPane.showMessageDialog(SignUpScreen.this, "비밀번호가 일치하지 않습니다.");
                     return;
@@ -168,7 +170,13 @@ public class SignUpScreen extends JFrame {
                 // 사진이 선택되지 않았으면 기본 이미지 경로 사용
                 String finalImagePath = (imagePath != null) ? imagePath : defaultImagePath;
 
-                boolean success = DataBase.insertUser(userId, name, email, password, finalImagePath);
+                // Connection 객체 생성
+                Connection conn = DBConnection.getConnection();
+
+                // UserDAO 객체를 생성하고 addUser 메서드를 호출
+                UserDAO userDAO = new UserDAO(conn);
+                UserDTO user = new UserDTO(userId, name, email, password, finalImagePath);
+                boolean success = userDAO.addUser(user);
 
                 if (success) {
                     JOptionPane.showMessageDialog(SignUpScreen.this, "회원가입이 완료되었습니다!");
@@ -176,17 +184,14 @@ public class SignUpScreen extends JFrame {
                     dispose();
                 } else {
                     JOptionPane.showMessageDialog(SignUpScreen.this, "회원가입 중 오류가 발생했습니다.");
-                    return;
                 }
-
             }
         });
-
 
         setVisible(true);
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(SignUpScreen::new);
+        // SwingUtilities.invokeLater(SignUpScreen::new);
     }
 }

@@ -1,23 +1,26 @@
 package Diary.UI;
 
-import Diary.DataBase.DataBase;
-import Diary.DataBase.Diary;
-import Diary.DataBase.User;
+import Diary.DataBase.DBConnection;
+import Diary.DataBase.Dao.DiaryDAO;
+import Diary.DataBase.Dao.UserDAO;
+import Diary.DataBase.Dto.DiaryDTO;
+import Diary.DataBase.Dto.UserDTO;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
 import java.util.List;
 
 public class DiaryListScreen extends JFrame {
-    private User user; // 사용자 객체
-    private List<Diary> diaries; // 일기 목록
+    private UserDTO user;
+    private List<DiaryDTO> diaries;
 
-    // 생성자에서 User 객체를 받아오기
-    public DiaryListScreen(User user) {
-        this.user = user; // 전달된 User 객체 설정
-        this.diaries = DataBase.getDiaries(user.getUser_id()); // 사용자 일기 목록 불러오기
+    public DiaryListScreen(UserDTO user, Connection conn) {
+        DiaryDAO diaryDAO = new DiaryDAO(conn);
+        this.user = user;
+        this.diaries = diaryDAO.getDiariesByUserId(user.getUserId());
 
         setTitle("일기 목록");
         setSize(350, 600);
@@ -25,27 +28,39 @@ public class DiaryListScreen extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
-        // 사용자 정보 패널 설정
+        // 사용자 정보 패널
         JPanel imagePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JLabel imageLabel = new JLabel();
+
+        // 이미지 경로가 존재하면 사용자 이미지 로드
+        String imagePath = user.getImage();
+        ImageIcon imageIcon = null;
+
+        if (imagePath != null && !imagePath.isEmpty()) {
+            imageIcon = new ImageIcon(imagePath); // 로컬 파일 경로 또는 URL 경로
+            imageIcon = new ImageIcon(imageIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH)); // 이미지 크기 조정
+        } else {
+            imageIcon = new ImageIcon(); // 기본 이미지 (없으면)
+        }
+
+        JLabel imageLabel = new JLabel(imageIcon);
         imageLabel.setHorizontalAlignment(SwingConstants.LEFT);
         imageLabel.setPreferredSize(new Dimension(100, 100));
         imageLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         imagePanel.add(imageLabel);
 
-        JLabel userIdLabel = new JLabel(user.getUser_id()); // User 객체에서 ID를 가져옴
+        JLabel userIdLabel = new JLabel(user.getUserId());
         userIdLabel.setHorizontalAlignment(SwingConstants.CENTER);
         imagePanel.add(userIdLabel);
 
-        // 사용자 피드 패널 (일기 목록 표시)
+        // 사용자 피드 패널
         JPanel userFeed = new JPanel(new GridLayout(3, 3, 5, 5));
         if (diaries.isEmpty()) {
             JLabel noDiaryLabel = new JLabel("작성한 일기가 없습니다.");
             noDiaryLabel.setHorizontalAlignment(SwingConstants.CENTER);
             userFeed.add(noDiaryLabel);
         } else {
-            for (Diary diary : diaries) {
-                JLabel feedLabel = new JLabel(diary.getTitle());
+            for (DiaryDTO diary : diaries) {
+                JLabel feedLabel = new JLabel(diary.getDiaryTitle());
                 feedLabel.setPreferredSize(new Dimension(100, 100));
                 feedLabel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
                 feedLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -73,7 +88,7 @@ public class DiaryListScreen extends JFrame {
         logoutButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new LogInScreen(); // 로그인 화면으로 이동
+                new LogInScreen();
                 dispose();
             }
         });
@@ -82,7 +97,7 @@ public class DiaryListScreen extends JFrame {
         newButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new NewDiaryScreen(user); // User 객체 전달
+                new NewDiaryScreen(user, DBConnection.getConnection()); // User 객체 전달
                 dispose();
             }
         });
@@ -91,7 +106,7 @@ public class DiaryListScreen extends JFrame {
         settingButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new SettingScreen(user); // User 객체 전달
+                new SettingScreen(user, DBConnection.getConnection());
                 dispose();
             }
         });
@@ -100,7 +115,7 @@ public class DiaryListScreen extends JFrame {
         backBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // 이전 페이지로 이동하는 로직 (예: 첫 페이지로 돌아가기)
+                // 이전 페이지로 이동하는 로직 구현해야 함
             }
         });
 
@@ -108,11 +123,10 @@ public class DiaryListScreen extends JFrame {
         nextBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // 다음 페이지로 이동하는 로직 (예: 더 많은 일기를 보여주기)
+                // 다음 페이지로 이동하는 로직 구현해야 함
             }
         });
 
-        // 패널을 JFrame에 추가
         add(imagePanel);
         add(userFeed);
         add(btnPanel1);
@@ -122,7 +136,6 @@ public class DiaryListScreen extends JFrame {
     }
 
     public static void main(String[] args) {
-        // User 객체를 예시로 전달하여 DiaryListScreen 실행
-        SwingUtilities.invokeLater(() -> new DiaryListScreen(new User("user123", "홍길동", "hong@domain.com")));
+        // SwingUtilities.invokeLater(() -> new DiaryListScreen(UserDAO.getUserById("123"), DBConnection.getConnection()));
     }
 }

@@ -1,5 +1,8 @@
 package Diary.UI;
 
+import Diary.DataBase.DBConnection;
+import Diary.DataBase.Dto.UserDTO;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
@@ -7,10 +10,11 @@ import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
 
 public class ManagerScreen extends JFrame {
 
-    public ManagerScreen() {
+    public ManagerScreen(UserDTO user, Connection conn) {
         setTitle("사용자 목록");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(350, 600);
@@ -120,7 +124,7 @@ public class ManagerScreen extends JFrame {
         }
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(ManagerScreen::new);
-    }
+//    public static void main(String[] args) {
+//        SwingUtilities.invokeLater(ManagerScreen::new);
+//    }
 }

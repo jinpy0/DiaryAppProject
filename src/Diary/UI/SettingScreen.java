@@ -1,6 +1,7 @@
 package Diary.UI;
 
-import Diary.DataBase.User;
+import Diary.DataBase.DBConnection;
+import Diary.DataBase.Dto.UserDTO;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -8,13 +9,14 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.sql.Connection;
 
 public class SettingScreen extends JFrame {
 
-    private User user; // User 객체를 저장할 변수
+    private UserDTO user; // User 객체를 저장할 변수
 
     // 생성자에서 User 객체를 받도록 수정
-    public SettingScreen(User user) {
+    public SettingScreen(UserDTO user, Connection conn) {
         this.user = user; // 전달받은 User 객체를 클래스 필드에 저장
 
         setTitle("설정 화면");
@@ -39,7 +41,7 @@ public class SettingScreen extends JFrame {
         JPanel idPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel setIdLabel = new JLabel("아이디 수정 : ");
         JTextField setIdField = new JTextField(15);
-        setIdField.setText(user.getUser_id()); // 기존 아이디 설정
+        setIdField.setText(user.getUserId()); // 기존 아이디 설정
         JButton checkIdBtn = new JButton("중복 확인");
         idPanel.add(setIdLabel);
         idPanel.add(setIdField);
@@ -99,7 +101,7 @@ public class SettingScreen extends JFrame {
                     imageLabel.setText(null);
 
                     // 변경된 이미지 경로를 user 객체에 저장 (추가 기능 구현)
-                    user.setProfileImage(path);
+                    user.setImage(path);
                 }
             }
         });
@@ -114,7 +116,7 @@ public class SettingScreen extends JFrame {
         // 뒤로가기 버튼
         backBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                new NewDiaryScreen(user); // 뒤로가기 버튼에서 user 정보를 NewDiaryScreen으로 전달
+                new NewDiaryScreen(user, DBConnection.getConnection()); // 뒤로가기 버튼에서 user 정보를 NewDiaryScreen으로 전달
                 dispose();
             }
         });
@@ -142,14 +144,14 @@ public class SettingScreen extends JFrame {
                 }
 
                 // 정보 수정 처리
-                user.setUser_id(newId);
+                user.setUserId(newId);
                 user.setEmail(newEmail);
                 user.setPassword(newPassword); // 비밀번호 변경
 
                 JOptionPane.showMessageDialog(SettingScreen.this, "정보가 수정되었습니다.");
 
                 // 수정 후 DiaryListScreen으로 이동
-                new DiaryListScreen(user); // user 정보를 DiaryListScreen으로 전달
+                new DiaryListScreen(user, DBConnection.getConnection()); // user 정보를 DiaryListScreen으로 전달
                 dispose();
             }
         });
@@ -168,6 +170,6 @@ public class SettingScreen extends JFrame {
 
     public static void main(String[] args) {
         // 임시로 User 객체를 전달하여 설정 화면 실행
-        SwingUtilities.invokeLater(() -> new SettingScreen(new User("user123", "홍길동", "email@example.com", "password123")));
+//        SwingUtilities.invokeLater(() -> new SettingScreen(new User("user123", "홍길동", "email@example.com", "password123")));
     }
 }

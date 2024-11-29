@@ -1,10 +1,13 @@
 package Diary.UI;
 
+import Diary.DataBase.Dto.UserDTO;
+
 import javax.swing.*;
 import java.awt.*;
+import java.sql.Connection;
 
 public class ManagerScreen2 extends JFrame {
-    public ManagerScreen2() {
+    public ManagerScreen2(UserDTO user, Connection conn) {
         setTitle("관리자 화면 2");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(350, 600);
@@ -65,7 +68,7 @@ public class ManagerScreen2 extends JFrame {
         setVisible(true);
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(ManagerScreen2::new);
-    }
+//    public static void main(String[] args) {
+//        SwingUtilities.invokeLater(ManagerScreen2::new);
+//    }
 }

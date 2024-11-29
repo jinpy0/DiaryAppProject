@@ -1,6 +1,6 @@
 package Diary.UI;
 
-import Diary.DataBase.User;
+import Diary.DataBase.Dto.UserDTO;
 import com.github.lgooddatepicker.components.DatePicker;
 import com.github.lgooddatepicker.components.DatePickerSettings;
 import com.github.lgooddatepicker.optionalusertools.DateChangeListener;
@@ -10,6 +10,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
 import java.time.LocalDate;
 
 public class NewDiaryScreen2 extends JFrame {
@@ -17,11 +18,13 @@ public class NewDiaryScreen2 extends JFrame {
     private JLabel dateLabel;
     private JButton dateBtn;
     private DatePicker datePicker;
-    private User user; // User 객체를 저장할 변수
+    private UserDTO user;
+    private String imagePath; // 이미지를 저장할 변수
 
-    // 생성자에서 User 객체를 받도록 수정
-    public NewDiaryScreen2(User user) {
-        this.user = user; // 전달받은 User 객체를 클래스 필드에 저장
+    // 생성자에서 User 객체와 이미지 경로를 받도록 수정
+    public NewDiaryScreen2(UserDTO user, Connection conn, String imagePath) {
+        this.user = user;
+        this.imagePath = imagePath; // 전달받은 이미지 경로 저장
 
         setTitle("일기쓰기 화면 2");
         setSize(350, 600);
@@ -47,12 +50,18 @@ public class NewDiaryScreen2 extends JFrame {
 
         add(datePicker);
 
-        // 전에 선택한 이미지 100 * 100 사이즈로 띄우기 // 전에 선택한 이미지 어떻게 받아올지?
+        // 선택한 이미지 100 * 100 사이즈로 띄우기
         JPanel imagePanel = new JPanel();
         JLabel imageLabel = new JLabel();
         imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
         imageLabel.setPreferredSize(new Dimension(100, 100));
         imageLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+        // 이미지 경로를 기반으로 이미지를 표시
+        ImageIcon imageIcon = new ImageIcon(imagePath);
+        Image image = imageIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+        imageLabel.setIcon(new ImageIcon(image));
+
         imagePanel.add(imageLabel);
 
         // 일기 내용 작성 textBox
@@ -88,41 +97,34 @@ public class NewDiaryScreen2 extends JFrame {
 
         backBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                new NewDiaryScreen(user); // 뒤로가기 버튼에서 user 정보를 NewDiaryScreen으로 전달
+                new NewDiaryScreen(user, conn);
                 dispose();
             }
         });
 
         createBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // 제목 작성 안했을 때 입력하라고 뜨게 하기
                 String title = titleTextField.getText();
                 if(title.isEmpty()) {
                     JOptionPane.showMessageDialog(NewDiaryScreen2.this, "제목을 입력해주세요");
                     return;
                 }
 
-                // 날짜 선택 안했을 때 입력하라고 뜨게 하기
                 LocalDate selectedDate = datePicker.getDate();
                 if(selectedDate == null) {
                     JOptionPane.showMessageDialog(NewDiaryScreen2.this, "날짜를 선택해주세요");
                     return;
                 }
 
-                // 내용 작성 안했을 때 입력하라고 뜨게 하기
                 String text = textArea.getText();
                 if(text.isEmpty()) {
                     JOptionPane.showMessageDialog(NewDiaryScreen2.this, "내용을 입력해주세요");
                     return;
                 }
 
-                // 모두 작성했을 때 작성하기
                 JOptionPane.showMessageDialog(NewDiaryScreen2.this, "작성완료");
 
-                // 업로드 하는 기능 구현?
-
-                // 창 닫기
-                new DiaryListScreen(user); // user 정보를 DiaryListScreen으로 전달
+                new DiaryListScreen(user, conn);
                 dispose();
             }
         });
@@ -136,6 +138,6 @@ public class NewDiaryScreen2 extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new NewDiaryScreen2(new User("user123", "홍길동", "email@example.com"))); // 임시로 User 객체를 전달
+        // 임시로 User 객체와 Connection 객체를 전달
     }
 }
