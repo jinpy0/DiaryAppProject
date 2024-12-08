@@ -1,6 +1,7 @@
 package Diary.UI;
 
 import Diary.DataBase.DBConnection;
+import Diary.DataBase.Dao.UserDAO;
 import Diary.DataBase.Dto.UserDTO;
 
 import javax.swing.*;
@@ -11,8 +12,12 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
+import java.util.List;
 
 public class ManagerScreen extends JFrame {
+
+    private UserDTO user;
+    private List<UserDTO> users;
 
     public ManagerScreen(UserDTO user, Connection conn) {
         setTitle("사용자 목록");
@@ -21,23 +26,22 @@ public class ManagerScreen extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
+        // UserDAO를 통해 데이터베이스에서 사용자 데이터 가져오기
+        UserDAO userDAO = new UserDAO(conn);
+        users = userDAO.getAllUsers(); // 데이터베이스에서 사용자 정보 가져오기
+
         // 테이블 열 제목
         String[] columnNames = {"이름", "사용자 ID", "이메일", "정보 보기"};
 
-        // 테이블 데이터 // 데이터베이스에서 받아오는 방법 ?
-        Object[][] data = {
-                // 일단
-                {"일진표", "1_jinpyo", "1jinpyo@gmail.com", "정보 보기"},
-                {"이진표", "2_jinpyo", "2jinpyo@gmail.com", "정보 보기"},
-                {"삼진표", "3_jinpyo", "3jinpyo@gmail.com", "정보 보기"},
-                {"사진표", "4_jinpyo", "4jinpyo@gmail.com", "정보 보기"},
-                {"오진표", "5_jinpyo", "5jinpyo@gmail.com", "정보 보기"},
-                {"육진표", "6_jinpyo", "6jinpyo@gmail.com", "정보 보기"},
-                {"칠진표", "7_jinpyo", "7jinpyo@gmail.com", "정보 보기"},
-                {"팔진표", "8_jinpyo", "8jinpyo@gmail.com", "정보 보기"},
-                {"구진표", "9_jinpyo", "9jinpyo@gmail.com", "정보 보기"},
-                {"십진표", "10_jinpyo", "10jinpyo@gmail.com", "정보 보기"}
-        };
+        // users 리스트를 Object[][] 배열로 변환
+        Object[][] data = new Object[users.size()][4];
+        for (int i = 0; i < users.size(); i++) {
+            UserDTO u = users.get(i);
+            data[i][0] = u.getName();        // 이름
+            data[i][1] = u.getUserId();     // 사용자 ID
+            data[i][2] = u.getEmail();      // 이메일
+            data[i][3] = "정보 보기";       // 버튼 텍스트
+        }
 
         // 테이블 모델 생성
         DefaultTableModel model = new DefaultTableModel(data, columnNames);
@@ -51,11 +55,12 @@ public class ManagerScreen extends JFrame {
         // 버튼 추가
         TableColumnModel columnModel = table.getColumnModel();
         columnModel.getColumn(3).setCellRenderer(new ButtonRenderer());
-        columnModel.getColumn(3).setCellEditor(new ButtonEditor(new JCheckBox()));
+        columnModel.getColumn(3).setCellEditor(new ButtonEditor(new JCheckBox(), table, users, conn)); // 테이블과 users 전달
 
         JScrollPane scrollPane = new JScrollPane(table);
         add(scrollPane, BorderLayout.CENTER);
 
+        // 로그아웃 버튼
         JButton logoutBtn = new JButton("로그아웃");
         logoutBtn.addActionListener(new ActionListener() {
             @Override
@@ -65,6 +70,7 @@ public class ManagerScreen extends JFrame {
             }
         });
         add(logoutBtn, BorderLayout.SOUTH);
+
         setVisible(true);
     }
 
@@ -85,9 +91,15 @@ public class ManagerScreen extends JFrame {
         private JButton button;
         private String label;
         private boolean clicked;
+        private JTable table; // 테이블 참조 추가
+        private List<UserDTO> users; // users 리스트 참조 추가
+        private Connection conn; // 데이터베이스 연결 추가
 
-        public ButtonEditor(JCheckBox checkBox) {
+        public ButtonEditor(JCheckBox checkBox, JTable table, List<UserDTO> users, Connection conn) {
             super(checkBox);
+            this.table = table; // 전달받은 테이블 저장
+            this.users = users; // 전달받은 users 리스트 저장
+            this.conn = conn;   // 데이터베이스 연결 저장
             button = new JButton();
             button.setOpaque(true);
             button.addActionListener(new ActionListener() {
@@ -108,7 +120,12 @@ public class ManagerScreen extends JFrame {
         public Object getCellEditorValue() {
             if (clicked) {
                 // 버튼 클릭 시 실행할 작업
-                JOptionPane.showMessageDialog(button, "사용자 정보를 확인합니다.");
+                int selectedRow = table.getSelectedRow(); // 현재 선택된 행 가져오기
+                if (selectedRow >= 0 && selectedRow < users.size()) {
+                    UserDTO selectedUser = users.get(selectedRow);
+                    new ManagerScreen2(selectedUser, conn); // ManagerScreen2로 이동
+                    SwingUtilities.getWindowAncestor(button).dispose(); // 현재 창 닫기
+                }
             }
             clicked = false;
             return label;
@@ -123,8 +140,6 @@ public class ManagerScreen extends JFrame {
             super.fireEditingStopped();
         }
     }
-
-//    public static void main(String[] args) {
-//        SwingUtilities.invokeLater(ManagerScreen::new);
-//    }
 }
+
+

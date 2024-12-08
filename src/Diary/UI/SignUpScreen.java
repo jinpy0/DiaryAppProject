@@ -157,6 +157,7 @@ public class SignUpScreen extends JFrame {
                 String email = emailField.getText();
                 String password = String.valueOf(passwordField.getPassword());
                 String confirmPassword = String.valueOf(confirmPasswordField.getPassword());
+                String role = "USER";
 
                 if (userId.isEmpty() || name.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
                     JOptionPane.showMessageDialog(SignUpScreen.this, "모든 필드를 입력해주세요.");
@@ -175,7 +176,7 @@ public class SignUpScreen extends JFrame {
 
                 // UserDAO 객체를 생성하고 addUser 메서드를 호출
                 UserDAO userDAO = new UserDAO(conn);
-                UserDTO user = new UserDTO(userId, name, email, password, finalImagePath);
+                UserDTO user = new UserDTO(userId, name, email, password, finalImagePath, role);
                 boolean success = userDAO.addUser(user);
 
                 if (success) {

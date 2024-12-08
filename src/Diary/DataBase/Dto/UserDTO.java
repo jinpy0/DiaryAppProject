@@ -7,25 +7,25 @@ public class UserDTO {
     private String email;
     private String password;
     private String image;
-    private String role = "USER";
+    private String role;
 
-    public UserDTO(String userId, String name, String email, String password, String image) {
+    public UserDTO(String userId, String name, String email, String password, String image, String role) {
         this.userId = userId;
         this.name = name;
         this.email = email;
         this.password = password;
         this.image = image;
-        this.role = "USER";
+        this.role = role;
     }
 
-    public UserDTO(int id, String userId, String name, String email, String password, String image) {
+    public UserDTO(int id, String userId, String name, String email, String password, String image, String role) {
         this.id = getId();
         this.userId = userId;
         this.name = name;
         this.email = email;
         this.password = password;
         this.image = image;
-        this.role = "USER";
+        this.role = role;
     }
 
     public int getId() { return id; }

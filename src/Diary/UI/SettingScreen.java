@@ -1,36 +1,53 @@
 package Diary.UI;
 
+import Diary.DataBase.Dao.UserDAO;
 import Diary.DataBase.DBConnection;
 import Diary.DataBase.Dto.UserDTO;
+import Diary.DataBase.service.UserSession;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.sql.Connection;
 
 public class SettingScreen extends JFrame {
 
-    private UserDTO user; // User 객체를 저장할 변수
+    private String imagePath; // 이미지 경로 저장
 
-    // 생성자에서 User 객체를 받도록 수정
-    public SettingScreen(UserDTO user, Connection conn) {
-        this.user = user; // 전달받은 User 객체를 클래스 필드에 저장
+    public SettingScreen(Connection conn) {
+        // UserSession에서 사용자 정보 가져오기
+        UserDTO user = UserSession.getInstance().getCurrentUser();
+        if (user == null) {
+            JOptionPane.showMessageDialog(this, "로그인 정보가 없습니다. 로그인 화면으로 이동합니다.");
+            new LogInScreen();
+            dispose();
+            return;
+        }
+
+        this.imagePath = user.getImage(); // 기존 사용자 이미지 경로 가져오기
 
         setTitle("설정 화면");
-        setSize(350, 600);
+        setSize(400, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new FlowLayout(FlowLayout.LEFT));
 
         // 이미지 선택 패널, 버튼
         JPanel imagePanel = new JPanel();
-        JLabel imageLabel = new JLabel(); // 기본 이미지 받아오기 설정해야함
+        JLabel imageLabel = new JLabel();
         imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
         imageLabel.setPreferredSize(new Dimension(120, 120));
         imageLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+        // 이미지 초기 표시
+        if (imagePath != null && !imagePath.isEmpty()) {
+            ImageIcon imageIcon = new ImageIcon(new ImageIcon(imagePath).getImage()
+                    .getScaledInstance(100, 100, Image.SCALE_SMOOTH));
+            imageLabel.setIcon(imageIcon);
+        } else {
+            imageLabel.setText("이미지 없음");
+        }
         imagePanel.add(imageLabel);
 
         JPanel buttonPanel = new JPanel();
@@ -58,21 +75,21 @@ public class SettingScreen extends JFrame {
         // 현재 비밀번호 확인 패널
         JPanel currentPasswordPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel crtPasswordLabel = new JLabel("현재 비밀번호 : ");
-        JTextField crtPasswordField = new JTextField(15);
+        JPasswordField crtPasswordField = new JPasswordField(15);
         currentPasswordPanel.add(crtPasswordLabel);
         currentPasswordPanel.add(crtPasswordField);
 
         // 수정할 비밀번호 입력 패널
         JPanel setPasswordPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel setPasswordLabel = new JLabel("변경할 비밀번호 : ");
-        JTextField setPasswordField = new JTextField(15);
+        JPasswordField setPasswordField = new JPasswordField(15);
         setPasswordPanel.add(setPasswordLabel);
         setPasswordPanel.add(setPasswordField);
 
         // 수정할 비밀번호 확인 패널
         JPanel checkPasswordPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel checkPasswordLabel = new JLabel("비밀번호 확인 : ");
-        JTextField checkPasswordField = new JTextField(15);
+        JPasswordField checkPasswordField = new JPasswordField(15);
         checkPasswordPanel.add(checkPasswordLabel);
         checkPasswordPanel.add(checkPasswordField);
 
@@ -84,78 +101,79 @@ public class SettingScreen extends JFrame {
         btnPanel.add(setBtn);
 
         // 사진 선택 버튼
-        selectImageBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser chooser = new JFileChooser();
-                chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-                chooser.setFileFilter(new FileNameExtensionFilter("이미지 파일", "jpg", "jpeg", "png", "gif"));
+        selectImageBtn.addActionListener(e -> {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            chooser.setFileFilter(new FileNameExtensionFilter("이미지 파일", "jpg", "jpeg", "png", "gif"));
 
-                int result = chooser.showOpenDialog(SettingScreen.this);
-                if (result == JFileChooser.APPROVE_OPTION) {
-                    File file = chooser.getSelectedFile();
-                    String path = file.getAbsolutePath();
+            int result = chooser.showOpenDialog(SettingScreen.this);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File file = chooser.getSelectedFile();
+                imagePath = file.getAbsolutePath();
 
-                    ImageIcon imageIcon = new ImageIcon(path);
-                    Image image = imageIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-                    imageLabel.setIcon(new ImageIcon(image));
-                    imageLabel.setText(null);
-
-                    // 변경된 이미지 경로를 user 객체에 저장 (추가 기능 구현)
-                    user.setImage(path);
-                }
+                ImageIcon imageIcon = new ImageIcon(new ImageIcon(imagePath).getImage()
+                        .getScaledInstance(100, 100, Image.SCALE_SMOOTH));
+                imageLabel.setIcon(imageIcon);
+                imageLabel.setText(null);
             }
         });
 
         // 중복 확인 버튼
-        checkIdBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // 데이터베이스에서 아이디 받아오고 비교하는 로직 추가 필요
+        checkIdBtn.addActionListener(e -> {
+            UserDAO userDAO = new UserDAO(conn);
+            String newId = setIdField.getText();
+            if (userDAO.isUserIdOverlap(newId)) {
+                JOptionPane.showMessageDialog(SettingScreen.this, "아이디가 중복됩니다. 다른 아이디를 입력해주세요.");
+            } else {
+                JOptionPane.showMessageDialog(SettingScreen.this, "사용 가능한 아이디입니다.");
             }
         });
 
         // 뒤로가기 버튼
-        backBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                new NewDiaryScreen(user, DBConnection.getConnection()); // 뒤로가기 버튼에서 user 정보를 NewDiaryScreen으로 전달
-                dispose();
-            }
+        backBtn.addActionListener(e -> {
+            new DiaryListScreen(conn); // 다이어리 목록 화면으로 이동
+            dispose();
         });
 
         // 정보 수정 버튼
-        setBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // 아이디, 이메일, 비밀번호 수정 처리
-                String newId = setIdField.getText();
-                String newEmail = setEmailField.getText();
-                String currentPassword = crtPasswordField.getText();
-                String newPassword = setPasswordField.getText();
-                String confirmPassword = checkPasswordField.getText();
+        setBtn.addActionListener(e -> {
+            String newId = setIdField.getText();
+            String newEmail = setEmailField.getText();
+            String currentPassword = new String(crtPasswordField.getPassword());
+            String newPassword = new String(setPasswordField.getPassword());
+            String confirmPassword = new String(checkPasswordField.getPassword());
 
-                // 비밀번호 변경 확인
-                if (!newPassword.equals(confirmPassword)) {
-                    JOptionPane.showMessageDialog(SettingScreen.this, "비밀번호가 일치하지 않습니다.");
-                    return;
-                }
+            // 현재 비밀번호 확인
+            if (!user.getPassword().equals(currentPassword)) {
+                JOptionPane.showMessageDialog(SettingScreen.this, "현재 비밀번호가 틀립니다.");
+                return;
+            }
 
-                // 비밀번호 확인 로직 필요 (현재 비밀번호 확인)
-                if (!user.getPassword().equals(currentPassword)) {
-                    JOptionPane.showMessageDialog(SettingScreen.this, "현재 비밀번호가 틀립니다.");
-                    return;
-                }
+            // 비밀번호 확인
+            if (!newPassword.equals(confirmPassword)) {
+                JOptionPane.showMessageDialog(SettingScreen.this, "새 비밀번호가 일치하지 않습니다.");
+                return;
+            }
 
-                // 정보 수정 처리
-                user.setUserId(newId);
-                user.setEmail(newEmail);
-                user.setPassword(newPassword); // 비밀번호 변경
+            // 정보 수정
+            user.setUserId(newId);
+            user.setEmail(newEmail);
+            user.setPassword(newPassword);
+            user.setImage(imagePath);
 
+            UserDAO userDAO = new UserDAO(conn);
+            boolean isUpdated = userDAO.updateUser(user);
+
+            if (isUpdated) {
                 JOptionPane.showMessageDialog(SettingScreen.this, "정보가 수정되었습니다.");
-
-                // 수정 후 DiaryListScreen으로 이동
-                new DiaryListScreen(user, DBConnection.getConnection()); // user 정보를 DiaryListScreen으로 전달
+                new DiaryListScreen(conn); // 다이어리 목록 화면으로 이동
                 dispose();
+            } else {
+                JOptionPane.showMessageDialog(SettingScreen.this, "정보 수정에 실패했습니다. 다시 시도해주세요.");
             }
         });
 
+        // 컴포넌트 추가
         add(imagePanel);
         add(buttonPanel);
         add(idPanel);
@@ -166,10 +184,5 @@ public class SettingScreen extends JFrame {
         add(btnPanel);
 
         setVisible(true);
-    }
-
-    public static void main(String[] args) {
-        // 임시로 User 객체를 전달하여 설정 화면 실행
-//        SwingUtilities.invokeLater(() -> new SettingScreen(new User("user123", "홍길동", "email@example.com", "password123")));
     }
 }

@@ -6,7 +6,8 @@ import java.sql.SQLException;
 
 public class DBConnection {
     private static final String DRIVER = "org.mariadb.jdbc.Driver";
-    private static final String URL = "jdbc:mariadb://localhost:3306/diary_project";
+//    private static final String URL = "jdbc:mariadb://localhost:3306/diary_project";
+    private static  final String URL= "jdbc:mariadb://localhost:3306/diary_project?useUnicode=true&characterEncoding=utf8mb4";
     private static final String USER = "root";
     private static final String PASSWORD = "1234";
 

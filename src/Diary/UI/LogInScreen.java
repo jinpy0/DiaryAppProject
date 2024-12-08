@@ -3,6 +3,7 @@ package Diary.UI;
 import Diary.DataBase.DBConnection;
 import Diary.DataBase.Dao.UserDAO;
 import Diary.DataBase.Dto.UserDTO;
+import Diary.DataBase.service.UserSession;
 
 import javax.swing.*;
 import java.awt.*;
@@ -38,28 +39,32 @@ public class LogInScreen extends JFrame {
         passwordPanel.add(Box.createRigidArea(new Dimension(10, 0)));
         passwordPanel.add(loginButton);
 
-        // 로그인 버튼
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String userId = userField.getText();
                 String password = new String(passwordField.getPassword());
 
-                // 로그인 정보 확인
                 try {
                     // UserDAO 객체 생성, DB 연결 정보를 전달
                     UserDAO userDAO = new UserDAO(DBConnection.getConnection());
                     UserDTO user = userDAO.getUserByIdPassword(userId, password);
 
                     if (user != null) {
+                        // UserSession에 사용자 정보 저장
+                        UserSession.getInstance().setCurrentUser(user);
+
+                        String role = user.getRole();
+                        System.out.println(role);
+
                         // 관리자면 관리자 페이지로 이동
-                        if (user.getRole().equals("ADMIN")) {
+                        if (role.equals("ADMIN")) {
                             new ManagerScreen(user, DBConnection.getConnection());
                             dispose();
                         }
                         // 관리자가 아닐 경우 (일반 회원)
                         else {
-                            new DiaryListScreen(user, DBConnection.getConnection());
+                            new DiaryListScreen(DBConnection.getConnection());
                             dispose();
                         }
                     } else {
@@ -70,6 +75,7 @@ public class LogInScreen extends JFrame {
                 }
             }
         });
+
 
         // 빈 공간 추가 (하단 여백)
         add(Box.createVerticalStrut(20));

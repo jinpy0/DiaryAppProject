@@ -12,6 +12,8 @@ public class DiaryDTO {
     private LocalDate createDate;
     private LocalDate updateDate;
 
+    public DiaryDTO() {}
+
     public DiaryDTO(int id, String userId, String diaryImage, String diaryTitle, String diaryContent, LocalDate createDate, LocalDate updateDate) {
         this.id = id;
         this.userId = userId;

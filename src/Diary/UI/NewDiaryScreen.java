@@ -1,21 +1,27 @@
 package Diary.UI;
 
+import Diary.DataBase.DBConnection;
 import Diary.DataBase.Dto.UserDTO;
+import Diary.DataBase.service.UserSession;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.sql.Connection;
 
 public class NewDiaryScreen extends JFrame {
     private String imagePath = "파일경로.jpg"; // 기본 이미지 경로
-    private UserDTO user;
 
-    public NewDiaryScreen(UserDTO user, Connection conn) {
-        this.user = user;
+    public NewDiaryScreen(Connection conn) {
+        // UserSession에서 현재 사용자 정보 가져오기
+        UserDTO user = UserSession.getInstance().getCurrentUser();
+        if (user == null) {
+            JOptionPane.showMessageDialog(this, "로그인 정보가 없습니다. 로그인 화면으로 이동합니다.");
+            new LogInScreen();
+            dispose();
+            return;
+        }
 
         setTitle("일기 작성 페이지");
         setSize(350, 600);
@@ -29,7 +35,7 @@ public class NewDiaryScreen extends JFrame {
         imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
         imageLabel.setPreferredSize(new Dimension(120, 120));
         imageLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        imageLabel.setIcon(new ImageIcon(imagePath));
+        imageLabel.setIcon(new ImageIcon(imagePath)); // 기본 이미지 표시
         imagePanel.add(imageLabel);
 
         // 사진 선택 버튼 패널
@@ -44,37 +50,38 @@ public class NewDiaryScreen extends JFrame {
         btnPanel.add(backBtn);
         btnPanel.add(nextBtn);
 
+        // 화면 구성 요소 추가
         add(imagePanel);
         add(imgBtnPanel);
         add(btnPanel);
 
-        imgBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser fileChooser = new JFileChooser();
-                fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-                fileChooser.setFileFilter(new FileNameExtensionFilter("이미지 파일", "jpg", "jpeg", "png", "gif"));
+        // 사진 선택 버튼 클릭 이벤트
+        imgBtn.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            fileChooser.setFileFilter(new FileNameExtensionFilter("이미지 파일", "jpg", "jpeg", "png", "gif"));
 
-                int result = fileChooser.showOpenDialog(NewDiaryScreen.this);
-                if (result == JFileChooser.APPROVE_OPTION) {
-                    File selectedFile = fileChooser.getSelectedFile();
-                    imagePath = selectedFile.getAbsolutePath(); // 이미지 경로 업데이트
+            int result = fileChooser.showOpenDialog(NewDiaryScreen.this);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File selectedFile = fileChooser.getSelectedFile();
+                imagePath = selectedFile.getAbsolutePath(); // 이미지 경로 업데이트
 
-                    ImageIcon imageIcon = new ImageIcon(imagePath);
-                    Image image = imageIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-                    imageLabel.setIcon(new ImageIcon(image));
-                    imageLabel.setText(null);
-                }
+                ImageIcon imageIcon = new ImageIcon(imagePath);
+                Image image = imageIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+                imageLabel.setIcon(new ImageIcon(image));
+                imageLabel.setText(null); // 텍스트 제거
             }
         });
 
+        // 뒤로가기 버튼 클릭 이벤트
         backBtn.addActionListener(e -> {
-            new DiaryListScreen(user, conn);
+            new DiaryListScreen(conn); // 다이어리 목록 화면으로 이동
             dispose();
         });
 
+        // 다음 버튼 클릭 이벤트
         nextBtn.addActionListener(e -> {
-            new NewDiaryScreen2(user, conn, imagePath); // 이미지 경로 전달
+            new NewDiaryScreen2(conn, imagePath); // 다음 화면으로 이미지 경로 전달
             dispose();
         });
 
@@ -82,6 +89,12 @@ public class NewDiaryScreen extends JFrame {
     }
 
     public static void main(String[] args) {
-        // 임시로 User 객체와 Connection 객체를 전달
+        // 테스트용 UserSession 설정
+        UserDTO sampleUser = new UserDTO(1, "sample_user", "Sample User", "sample@example.com", "password", "path/to/user/image.jpg", "USER");
+        UserSession.getInstance().setCurrentUser(sampleUser);
+
+        // DB 연결 객체 생성 후 실행
+        Connection conn = DBConnection.getConnection();
+        new NewDiaryScreen(conn);
     }
 }

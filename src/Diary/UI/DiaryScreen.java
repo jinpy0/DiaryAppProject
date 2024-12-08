@@ -3,19 +3,27 @@ package Diary.UI;
 import Diary.DataBase.DBConnection;
 import Diary.DataBase.Dto.DiaryDTO;
 import Diary.DataBase.Dto.UserDTO;
+import Diary.DataBase.service.UserSession;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.sql.Connection;
 
 public class DiaryScreen extends JFrame {
-    private UserDTO user; // 사용자 객체
     private DiaryDTO diary; // 일기 객체
 
-    // 생성자에서 User 객체와 Diary 객체를 받아오기
-    public DiaryScreen(UserDTO user, DiaryDTO diary) {
-        this.user = user; // 전달된 User 객체 설정
+    // 생성자에서 Diary 객체만 받아오기
+    public DiaryScreen(DiaryDTO diary, Connection conn) {
+        // UserSession에서 사용자 정보 가져오기
+        UserDTO user = UserSession.getInstance().getCurrentUser();
+        if (user == null) {
+            JOptionPane.showMessageDialog(this, "로그인 정보가 없습니다. 로그인 화면으로 이동합니다.");
+            new LogInScreen();
+            dispose();
+            return;
+        }
+
         this.diary = diary; // 전달된 Diary 객체 설정
 
         setTitle("일기 보기");
@@ -31,10 +39,15 @@ public class DiaryScreen extends JFrame {
         imageLabel.setPreferredSize(new Dimension(200, 200));
         imageLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
-        // 실제 이미지 파일을 표시할 수 있도록 수정 (예시로 파일 경로를 넣음)
-        // 이미지 경로를 실제 이미지로 수정 필요
-        imageLabel.setIcon(new ImageIcon("이미지 파일 경로"));
-
+        // 이미지 경로 가져오기
+        String imagePath = diary.getDiaryImage();
+        if (imagePath != null && !imagePath.isEmpty()) {
+            ImageIcon imageIcon = new ImageIcon(new ImageIcon(imagePath).getImage()
+                    .getScaledInstance(200, 200, Image.SCALE_SMOOTH));
+            imageLabel.setIcon(imageIcon);
+        } else {
+            imageLabel.setText("이미지 없음"); // 이미지가 없을 경우 기본 텍스트 표시
+        }
         imagePanel.add(imageLabel);
 
         // 제목 패널
@@ -51,7 +64,8 @@ public class DiaryScreen extends JFrame {
         contentTextArea.setWrapStyleWord(true); // 단어 단위로 줄바꿈
         contentTextArea.setCaretPosition(0); // 처음부터 표시
         JScrollPane scrollPane = new JScrollPane(contentTextArea);
-        contentPanel.add(scrollPane);
+        contentPanel.setLayout(new BorderLayout());
+        contentPanel.add(scrollPane, BorderLayout.CENTER);
 
         // 제목과 내용 패널 합치는 패널
         JPanel panel = new JPanel();
@@ -71,28 +85,20 @@ public class DiaryScreen extends JFrame {
         add(buttonPanel, BorderLayout.SOUTH);
 
         // 뒤로가기 버튼 클릭 시
-        backBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new DiaryListScreen(user, DBConnection.getConnection()); // User 객체 전달
-                dispose();
-            }
+        backBtn.addActionListener(e -> {
+            new DiaryListScreen(DBConnection.getConnection()); // DiaryListScreen으로 이동
+            dispose();
         });
 
         // 수정 버튼 클릭 시
-        setBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new SettingDiaryScreen(user, diary); // User 객체와 Diary 객체 전달
-                dispose();
-            }
+        setBtn.addActionListener(e -> {
+            new SettingDiaryScreen(diary, DBConnection.getConnection()); // SettingDiaryScreen으로 이동
+            dispose();
         });
 
         setVisible(true);
     }
 
-    public static void main(String[] args) {
-        // User 객체와 Diary 객체를 예시로 전달하여 DiaryScreen 실행
-//        SwingUtilities.invokeLater(() -> new DiaryScreen(new User("user123", "홍길동", "hong@domain.com"), new Diary("일기 제목", "일기 내용")));
-    }
+//    public static void main(String[] args) {
+//    }
 }
