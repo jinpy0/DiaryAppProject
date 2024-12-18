@@ -1,19 +1,18 @@
 package Diary.UI;
 
 import Diary.DataBase.DBConnection;
+import Diary.DataBase.Dao.DiaryDAO;
 import Diary.DataBase.Dto.DiaryDTO;
 import Diary.DataBase.Dto.UserDTO;
 import Diary.DataBase.service.UserSession;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.sql.Connection;
 
 public class DiaryScreen extends JFrame {
     private DiaryDTO diary; // 일기 객체
 
-    // 생성자에서 Diary 객체만 받아오기
     public DiaryScreen(DiaryDTO diary, Connection conn) {
         // UserSession에서 사용자 정보 가져오기
         UserDTO user = UserSession.getInstance().getCurrentUser();
@@ -73,12 +72,14 @@ public class DiaryScreen extends JFrame {
         panel.add(titlePanel);
         panel.add(contentPanel);
 
-        // 뒤로가기, 수정 버튼 패널
+        // 뒤로가기, 수정, 삭제 버튼 패널
         JPanel buttonPanel = new JPanel();
         JButton backBtn = new JButton("뒤로가기");
         JButton setBtn = new JButton("수정");
+        JButton deleteBtn = new JButton("삭제");
         buttonPanel.add(backBtn);
         buttonPanel.add(setBtn);
+        buttonPanel.add(deleteBtn);
 
         add(imagePanel, BorderLayout.NORTH);
         add(panel, BorderLayout.CENTER);
@@ -96,9 +97,29 @@ public class DiaryScreen extends JFrame {
             dispose();
         });
 
+        // 삭제 버튼 클릭 시
+        deleteBtn.addActionListener(e -> {
+            int confirm = JOptionPane.showConfirmDialog(
+                    this,
+                    "정말로 이 일기를 삭제하시겠습니까?",
+                    "삭제 확인",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE
+            );
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                DiaryDAO diaryDAO = new DiaryDAO(conn);
+                boolean isDeleted = diaryDAO.deleteDiaryById(diary.getId());
+                if (isDeleted) {
+                    JOptionPane.showMessageDialog(this, "일기가 삭제되었습니다.");
+                    new DiaryListScreen(conn); // 삭제 후 목록 화면으로 이동
+                    dispose();
+                } else {
+                    JOptionPane.showMessageDialog(this, "삭제에 실패했습니다. 다시 시도해주세요.");
+                }
+            }
+        });
+
         setVisible(true);
     }
-
-//    public static void main(String[] args) {
-//    }
 }

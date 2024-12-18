@@ -107,44 +107,25 @@ public class NewDiaryScreen2 extends JFrame {
             dispose();
         });
 
-        // 작성하기 버튼 클릭 이벤트
         createBtn.addActionListener(e -> {
             String title = titleTextField.getText();
             String content = textArea.getText();
-
-            // 제목, 날짜, 내용 유효성 검사
-            if (title.isEmpty()) {
-                JOptionPane.showMessageDialog(NewDiaryScreen2.this, "제목을 입력해주세요");
-                return;
-            }
-
             LocalDate selectedDate = datePicker.getDate();
-            if (selectedDate == null) {
-                JOptionPane.showMessageDialog(NewDiaryScreen2.this, "날짜를 선택해주세요");
+            if (title.isEmpty()||selectedDate == null||content.isEmpty()) {
+                JOptionPane.showMessageDialog(NewDiaryScreen2.this, "모든 필드를 입력해주세요");
                 return;
             }
-
-            if (content.isEmpty()) {
-                JOptionPane.showMessageDialog(NewDiaryScreen2.this, "내용을 입력해주세요");
-                return;
-            }
-
-            // DiaryDTO 객체 생성 및 데이터 설정
             DiaryDTO diary = new DiaryDTO();
             diary.setUserId(user.getUserId());
             diary.setDiaryImage(imagePath);
             diary.setDiaryTitle(title);
             diary.setDiaryContent(content);
             diary.setCreateDate(selectedDate);
-
-            // DiaryDAO를 사용하여 데이터베이스에 저장
             DiaryDAO diaryDAO = new DiaryDAO(conn);
             boolean isSaved = diaryDAO.addDiary(diary);
-
-            // 작성 결과 처리
             if (isSaved) {
                 JOptionPane.showMessageDialog(NewDiaryScreen2.this, "작성 완료!");
-                new DiaryListScreen(conn); // 작성 후 다이어리 목록 화면으로 이동
+                new DiaryListScreen(conn);
                 dispose();
             } else {
                 JOptionPane.showMessageDialog(NewDiaryScreen2.this, "작성 실패. 다시 시도해주세요.");

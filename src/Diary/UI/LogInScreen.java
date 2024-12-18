@@ -9,19 +9,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.SQLException;
 
 public class LogInScreen extends JFrame {
     public LogInScreen() {
-        // 기본 설정
         setTitle("로그인 화면");
         setSize(350, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
-        // 아이디 입력
         JPanel userPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel userLabel = new JLabel("  아이디  :");
         JTextField userField = new JTextField(12);
@@ -44,25 +40,17 @@ public class LogInScreen extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String userId = userField.getText();
                 String password = new String(passwordField.getPassword());
-
                 try {
-                    // UserDAO 객체 생성, DB 연결 정보를 전달
                     UserDAO userDAO = new UserDAO(DBConnection.getConnection());
                     UserDTO user = userDAO.getUserByIdPassword(userId, password);
-
                     if (user != null) {
-                        // UserSession에 사용자 정보 저장
                         UserSession.getInstance().setCurrentUser(user);
-
                         String role = user.getRole();
                         System.out.println(role);
-
-                        // 관리자면 관리자 페이지로 이동
                         if (role.equals("ADMIN")) {
                             new ManagerScreen(user, DBConnection.getConnection());
                             dispose();
                         }
-                        // 관리자가 아닐 경우 (일반 회원)
                         else {
                             new DiaryListScreen(DBConnection.getConnection());
                             dispose();

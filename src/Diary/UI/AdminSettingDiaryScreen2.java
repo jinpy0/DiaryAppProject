@@ -18,12 +18,12 @@ import java.io.File;
 import java.sql.Connection;
 import java.time.LocalDate;
 
-public class SettingDiaryScreen2 extends JFrame {
+public class AdminSettingDiaryScreen2 extends JFrame {
     private DatePicker datePicker;
     private DiaryDTO selectedDiary;
     private String imagePath;
 
-    public SettingDiaryScreen2(DiaryDTO diary, Connection conn) {
+    public AdminSettingDiaryScreen2(DiaryDTO diary, Connection conn) {
         UserDTO user = UserSession.getInstance().getCurrentUser();
         if (user == null) {
             JOptionPane.showMessageDialog(this, "로그인 정보가 없습니다. 로그인 화면으로 이동합니다.");
@@ -35,7 +35,7 @@ public class SettingDiaryScreen2 extends JFrame {
         this.selectedDiary = diary;
         this.imagePath = diary.getDiaryImage(); // 기존 이미지 경로
 
-        setTitle("일기 수정 페이지 2");
+        setTitle("관리자 일기 수정 페이지 2");
         setSize(350, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -123,7 +123,7 @@ public class SettingDiaryScreen2 extends JFrame {
         JButton saveBtn = new JButton("수정하기");
 
         backBtn.addActionListener(e -> {
-            new SettingDiaryScreen(diary, conn);
+            new AdminSettingDiaryScreen(diary.getId(), conn);
             dispose();
         });
 
@@ -131,28 +131,48 @@ public class SettingDiaryScreen2 extends JFrame {
             String title = titleTextField.getText();
             LocalDate selectedDate = datePicker.getDate();
             String content = textArea.getText();
-            if (title.isEmpty() || selectedDate == null || content.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "모든 필드를 입력해 주세요");
+
+            // 유효성 검사
+            if (title.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "제목을 입력해주세요.");
                 return;
             }
+            if (selectedDate == null) {
+                JOptionPane.showMessageDialog(this, "날짜를 선택해주세요.");
+                return;
+            }
+            if (content.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "내용을 입력해주세요.");
+                return;
+            }
+
+            // DiaryDTO 업데이트
             selectedDiary.setDiaryTitle(title);
             selectedDiary.setDiaryContent(content);
             selectedDiary.setUpdateDate(selectedDate);
             selectedDiary.setDiaryImage(imagePath);
+
             DiaryDAO diaryDAO = new DiaryDAO(conn);
             boolean isUpdated = diaryDAO.updateDiary(selectedDiary);
+
             if (isUpdated) {
                 JOptionPane.showMessageDialog(this, "수정 완료!");
-                new DiaryListScreen(conn);
+                // 수정 완료 후 화면 이동
+                if ("ADMIN".equalsIgnoreCase(user.getRole())) {
+                    new DiaryListDetailScreen(user, conn); // 관리자 화면으로 이동
+                } else {
+                    new DiaryListScreen(conn); // 일반 사용자 화면으로 이동
+                }
                 dispose();
-            }
-            else {
+            } else {
                 JOptionPane.showMessageDialog(this, "수정 실패. 다시 시도해주세요.");
             }
         });
-        
+
         buttonPanel.add(backBtn);
         buttonPanel.add(saveBtn);
+
+        // 화면 구성 요소 추가
         add(titlePanel);
         add(datePanel);
         add(imagePanel);

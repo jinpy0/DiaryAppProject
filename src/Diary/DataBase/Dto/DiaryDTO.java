@@ -12,6 +12,16 @@ public class DiaryDTO {
     private LocalDate createDate;
     private LocalDate updateDate;
 
+    private UserDTO user; // 다이어리 작성자 정보 추가
+
+    public UserDTO getUser() {
+        return user;
+    }
+
+    public void setUser(UserDTO user) {
+        this.user = user;
+    }
+
     public DiaryDTO() {}
 
     public DiaryDTO(int id, String userId, String diaryImage, String diaryTitle, String diaryContent, LocalDate createDate, LocalDate updateDate) {

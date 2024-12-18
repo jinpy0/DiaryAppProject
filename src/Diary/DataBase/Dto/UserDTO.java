@@ -28,6 +28,9 @@ public class UserDTO {
         this.role = role;
     }
 
+    public UserDTO() {
+    }
+
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 

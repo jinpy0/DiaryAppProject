@@ -1,5 +1,6 @@
 package Diary.UI;
 
+import Diary.DataBase.Dao.DiaryDAO;
 import Diary.DataBase.Dto.DiaryDTO;
 import Diary.DataBase.Dto.UserDTO;
 import Diary.DataBase.service.UserSession;
@@ -9,25 +10,40 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
 import java.sql.Connection;
+import java.sql.SQLException;
 
-public class SettingDiaryScreen extends JFrame {
+public class AdminSettingDiaryScreen extends JFrame {
     private String imagePath; // 이미지 경로
     private DiaryDTO selectedDiary; // 선택된 일기 객체
 
-    public SettingDiaryScreen(DiaryDTO diary, Connection conn) {
-        // UserSession에서 사용자 정보 가져오기
-        UserDTO user = UserSession.getInstance().getCurrentUser();
-        if (user == null) {
-            JOptionPane.showMessageDialog(this, "로그인 정보가 없습니다. 로그인 화면으로 이동합니다.");
-            new LogInScreen();
+    public AdminSettingDiaryScreen(int diaryId, Connection conn) {
+        try {
+            DiaryDAO diaryDAO = new DiaryDAO(conn);
+            DiaryDTO diary = diaryDAO.getDiaryWithUserById(diaryId);
+
+            if (diary == null) {
+                JOptionPane.showMessageDialog(this, "다이어리를 찾을 수 없습니다.");
+                dispose();
+                return;
+            }
+
+            if (diary.getUser() == null) {
+                JOptionPane.showMessageDialog(this, "작성자 정보가 누락되었습니다.");
+                dispose();
+                return;
+            }
+
+            this.selectedDiary = diary;
+            this.imagePath = diary.getDiaryImage(); // 저장된 사진 경로 설정
+
+            // 이후 UI 초기화...
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "다이어리 정보를 가져오는 중 오류가 발생했습니다.");
             dispose();
-            return;
         }
 
-        this.selectedDiary = diary;
-        this.imagePath = diary.getDiaryImage(); // 저장된 사진 경로를 초기값으로 설정
-
-        setTitle("일기 수정 페이지");
+        setTitle("관리자 일기 수정 페이지");
         setSize(350, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -74,7 +90,7 @@ public class SettingDiaryScreen extends JFrame {
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
             fileChooser.setFileFilter(new FileNameExtensionFilter("이미지 파일", "jpg", "jpeg", "png", "gif"));
 
-            int result = fileChooser.showOpenDialog(SettingDiaryScreen.this);
+            int result = fileChooser.showOpenDialog(AdminSettingDiaryScreen.this);
             if (result == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = fileChooser.getSelectedFile();
                 imagePath = selectedFile.getAbsolutePath(); // 이미지 경로 업데이트
@@ -89,21 +105,24 @@ public class SettingDiaryScreen extends JFrame {
 
         // 뒤로가기 버튼 이벤트 처리
         backBtn.addActionListener(e -> {
-            if ("ADMIN".equalsIgnoreCase(user.getRole())) {
-                new DiaryListDetailScreen(user, conn); // 관리자용 화면
-            } else {
-                new DiaryListScreen(conn);
+            if (selectedDiary.getUser() == null) {
+                JOptionPane.showMessageDialog(this, "작성자 정보를 찾을 수 없습니다.");
+                return;
             }
+            // 작성자 정보를 DiaryListDetailScreen으로 전달
+            new DiaryListDetailScreen(selectedDiary.getUser(), conn);
             dispose();
         });
+
+
 
         // 다음 버튼 이벤트 처리
         nextBtn.addActionListener(e -> {
             // 선택된 사진 경로 업데이트
             selectedDiary.setDiaryImage(imagePath);
 
-            // SettingDiaryScreen2로 이동
-            new SettingDiaryScreen2(selectedDiary, conn); // 제목, 날짜, 내용을 수정할 수 있는 화면으로 이동
+            // AdminSettingDiaryScreen2로 이동
+            new AdminSettingDiaryScreen2(selectedDiary, conn); // 제목, 날짜, 내용을 수정할 수 있는 화면으로 이동
             dispose();
         });
 

@@ -1,6 +1,5 @@
 package Diary.DataBase.Dao;
 
-import Diary.DataBase.DBConnection;
 import Diary.DataBase.Dto.UserDTO;
 
 import java.sql.*;
@@ -14,7 +13,6 @@ public class UserDAO {
         this.conn = conn;
     }
 
-    // User 추가
     public boolean addUser(UserDTO user) {
         String sql = "INSERT INTO users (user_id, name, email, password, image, role) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -31,7 +29,6 @@ public class UserDAO {
         }
     }
 
-    // 아이디와 비밀번호로 User 조회
     public UserDTO getUserByIdPassword(String userId, String password) {
         String sql = "SELECT * FROM users WHERE user_id = ? AND password = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -55,7 +52,6 @@ public class UserDAO {
         return null;
     }
 
-    // 모든 User 조회
     public List<UserDTO> getAllUsers() {
         List<UserDTO> users = new ArrayList<>();
         String sql = "SELECT * FROM Users";
@@ -77,7 +73,6 @@ public class UserDAO {
         return users;
     }
 
-    // User 수정
     public boolean updateUser(UserDTO user) {
         String sql = "UPDATE Users SET name = ?, email = ?, password = ?, image = ?, role = ? WHERE user_id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -93,6 +88,7 @@ public class UserDAO {
             return false;
         }
     }
+
 
     // 비밀번호 변경
     public boolean updatePassword(String userId, String newPassword) {

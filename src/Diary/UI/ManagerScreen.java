@@ -1,6 +1,5 @@
 package Diary.UI;
 
-import Diary.DataBase.DBConnection;
 import Diary.DataBase.Dao.UserDAO;
 import Diary.DataBase.Dto.UserDTO;
 
@@ -18,6 +17,9 @@ public class ManagerScreen extends JFrame {
 
     private UserDTO user;
     private List<UserDTO> users;
+    private JLabel nameLabel;
+    private JLabel idLabel;
+    private JLabel emailLabel;
 
     public ManagerScreen(UserDTO user, Connection conn) {
         setTitle("사용자 목록");
@@ -31,7 +33,7 @@ public class ManagerScreen extends JFrame {
         users = userDAO.getAllUsers(); // 데이터베이스에서 사용자 정보 가져오기
 
         // 테이블 열 제목
-        String[] columnNames = {"이름", "사용자 ID", "이메일", "정보 보기"};
+        String[] columnNames = {"이름", "사용자 ID", "이메일", "일기 보기"};
 
         // users 리스트를 Object[][] 배열로 변환
         Object[][] data = new Object[users.size()][4];
@@ -40,7 +42,7 @@ public class ManagerScreen extends JFrame {
             data[i][0] = u.getName();        // 이름
             data[i][1] = u.getUserId();     // 사용자 ID
             data[i][2] = u.getEmail();      // 이메일
-            data[i][3] = "정보 보기";       // 버튼 텍스트
+            data[i][3] = "일기 보기";       // 버튼 텍스트
         }
 
         // 테이블 모델 생성
@@ -60,6 +62,29 @@ public class ManagerScreen extends JFrame {
         JScrollPane scrollPane = new JScrollPane(table);
         add(scrollPane, BorderLayout.CENTER);
 
+        // 하단 정보 패널
+        JPanel infoPanel = new JPanel(new GridLayout(3, 1));
+        infoPanel.setBorder(BorderFactory.createTitledBorder("선택된 사용자 정보"));
+
+        nameLabel = new JLabel("이름: ");
+        idLabel = new JLabel("사용자 ID: ");
+        emailLabel = new JLabel("이메일: ");
+
+        infoPanel.add(nameLabel);
+        infoPanel.add(idLabel);
+        infoPanel.add(emailLabel);
+
+        add(infoPanel, BorderLayout.SOUTH);
+
+        // 테이블 선택 이벤트 리스너
+        table.getSelectionModel().addListSelectionListener(e -> {
+            int selectedRow = table.getSelectedRow();
+            if (selectedRow >= 0 && selectedRow < users.size()) {
+                UserDTO selectedUser = users.get(selectedRow);
+                updateInfoPanel(selectedUser); // 선택된 사용자 정보 업데이트
+            }
+        });
+
         // 로그아웃 버튼
         JButton logoutBtn = new JButton("로그아웃");
         logoutBtn.addActionListener(new ActionListener() {
@@ -69,9 +94,16 @@ public class ManagerScreen extends JFrame {
                 dispose();
             }
         });
-        add(logoutBtn, BorderLayout.SOUTH);
+        add(logoutBtn, BorderLayout.NORTH);
 
         setVisible(true);
+    }
+
+    // 하단 패널에 사용자 정보 업데이트
+    private void updateInfoPanel(UserDTO user) {
+        nameLabel.setText("이름: " + user.getName());
+        idLabel.setText("사용자 ID: " + user.getUserId());
+        emailLabel.setText("이메일: " + user.getEmail());
     }
 
     // 버튼 렌더러 클래스
@@ -123,7 +155,8 @@ public class ManagerScreen extends JFrame {
                 int selectedRow = table.getSelectedRow(); // 현재 선택된 행 가져오기
                 if (selectedRow >= 0 && selectedRow < users.size()) {
                     UserDTO selectedUser = users.get(selectedRow);
-                    new ManagerScreen2(selectedUser, conn); // ManagerScreen2로 이동
+                    // 선택된 유저의 일기 목록 상세 페이지로 이동
+                    new DiaryListDetailScreen(selectedUser, conn); // DiaryListDetailScreen으로 이동
                     SwingUtilities.getWindowAncestor(button).dispose(); // 현재 창 닫기
                 }
             }
@@ -141,5 +174,3 @@ public class ManagerScreen extends JFrame {
         }
     }
 }
-
-

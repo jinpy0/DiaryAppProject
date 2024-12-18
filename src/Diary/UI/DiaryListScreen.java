@@ -1,6 +1,5 @@
 package Diary.UI;
 
-import Diary.DataBase.DBConnection;
 import Diary.DataBase.Dao.DiaryDAO;
 import Diary.DataBase.Dto.DiaryDTO;
 import Diary.DataBase.Dto.UserDTO;
@@ -15,7 +14,6 @@ public class DiaryListScreen extends JFrame {
     private List<DiaryDTO> diaries;
 
     public DiaryListScreen(Connection conn) {
-        // UserSession에서 현재 사용자 정보 가져오기
         UserDTO user = UserSession.getInstance().getCurrentUser();
         if (user == null) {
             JOptionPane.showMessageDialog(this, "로그인 정보가 없습니다. 로그인 화면으로 이동합니다.");
@@ -33,18 +31,16 @@ public class DiaryListScreen extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
-        // 사용자 정보 패널
         JPanel imagePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
-        // 이미지 경로가 존재하면 사용자 이미지 로드
         String imagePath = user.getImage();
         ImageIcon imageIcon = null;
 
         if (imagePath != null && !imagePath.isEmpty()) {
-            imageIcon = new ImageIcon(imagePath); // 로컬 파일 경로 또는 URL 경로
+            imageIcon = new ImageIcon(imagePath);
             imageIcon = new ImageIcon(imageIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH)); // 이미지 크기 조정
         } else {
-            imageIcon = new ImageIcon(); // 기본 이미지 (없으면)
+            imageIcon = new ImageIcon();
         }
 
         JLabel imageLabel = new JLabel(imageIcon);
@@ -57,10 +53,9 @@ public class DiaryListScreen extends JFrame {
         userIdLabel.setHorizontalAlignment(SwingConstants.CENTER);
         imagePanel.add(userIdLabel);
 
-        // 사용자 피드 패널
-        int columns = 3; // 한 줄에 표시할 일기의 개수
-        int rows = (int) Math.ceil((double) diaries.size() / columns); // 총 행의 수 계산
-        JPanel userFeed = new JPanel(new GridLayout(rows, columns, 5, 5)); // 5, 5는 컴포넌트 간 간격
+        int columns = 3;
+        int rows = (int) Math.ceil((double) diaries.size() / columns);
+        JPanel userFeed = new JPanel(new GridLayout(rows, columns, 5, 5));
 
         if (diaries.isEmpty()) {
             JLabel noDiaryLabel = new JLabel("작성한 일기가 없습니다.");
@@ -70,36 +65,28 @@ public class DiaryListScreen extends JFrame {
             for (DiaryDTO diary : diaries) {
                 imagePath = diary.getDiaryImage();
                 imageIcon = null;
-
-                // 일기 이미지 로드 및 크기 조정
                 if (imagePath != null && !imagePath.isEmpty()) {
                     imageIcon = new ImageIcon(new ImageIcon(imagePath).getImage()
                             .getScaledInstance(100, 100, Image.SCALE_SMOOTH));
                 } else {
-                    // 기본 이미지 설정
                     imageIcon = new ImageIcon(new ImageIcon("default_diary_image.png").getImage()
                             .getScaledInstance(100, 100, Image.SCALE_SMOOTH));
                 }
-
                 JLabel feedLabel = new JLabel(imageIcon);
                 feedLabel.setPreferredSize(new Dimension(100, 100));
                 feedLabel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
                 feedLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-                // 마우스 클릭 이벤트 추가
                 feedLabel.addMouseListener(new java.awt.event.MouseAdapter() {
                     @Override
                     public void mouseClicked(java.awt.event.MouseEvent e) {
-                        // DiaryScreen으로 이동
-                        new DiaryScreen(diary, conn); // DiaryScreen으로 해당 다이어리 데이터 전달
-                        dispose(); // 현재 화면 닫기
+                        new DiaryScreen(diary, conn);
+                        dispose();
                     }
                 });
-
                 userFeed.add(feedLabel);
             }
 
-            // 부족한 셀을 추가해서 3의 배수로 맞춤 ( 위치 조정 )
             int remainingCells = (rows * columns) - diaries.size();
             for (int i = 0; i < remainingCells; i++) {
                 userFeed.add(new JLabel());

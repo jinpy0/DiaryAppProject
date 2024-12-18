@@ -13,10 +13,9 @@ import java.sql.Connection;
 
 public class SettingScreen extends JFrame {
 
-    private String imagePath; // 이미지 경로 저장
+    private String imagePath;
 
     public SettingScreen(Connection conn) {
-        // UserSession에서 사용자 정보 가져오기
         UserDTO user = UserSession.getInstance().getCurrentUser();
         if (user == null) {
             JOptionPane.showMessageDialog(this, "로그인 정보가 없습니다. 로그인 화면으로 이동합니다.");
@@ -25,22 +24,20 @@ public class SettingScreen extends JFrame {
             return;
         }
 
-        this.imagePath = user.getImage(); // 기존 사용자 이미지 경로 가져오기
+        this.imagePath = user.getImage();
 
         setTitle("설정 화면");
-        setSize(400, 700);
+        setSize(350, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new FlowLayout(FlowLayout.LEFT));
 
-        // 이미지 선택 패널, 버튼
         JPanel imagePanel = new JPanel();
         JLabel imageLabel = new JLabel();
         imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
         imageLabel.setPreferredSize(new Dimension(120, 120));
         imageLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
-        // 이미지 초기 표시
         if (imagePath != null && !imagePath.isEmpty()) {
             ImageIcon imageIcon = new ImageIcon(new ImageIcon(imagePath).getImage()
                     .getScaledInstance(100, 100, Image.SCALE_SMOOTH));
@@ -54,7 +51,6 @@ public class SettingScreen extends JFrame {
         JButton selectImageBtn = new JButton("사진 선택");
         buttonPanel.add(selectImageBtn);
 
-        // 아이디 입력(수정) 패널
         JPanel idPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel setIdLabel = new JLabel("아이디 수정 : ");
         JTextField setIdField = new JTextField(15);
@@ -64,7 +60,6 @@ public class SettingScreen extends JFrame {
         idPanel.add(setIdField);
         idPanel.add(checkIdBtn);
 
-        // 이메일 수정 패널
         JPanel setEmailPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel emailLabel = new JLabel("이메일 수정 : ");
         JTextField setEmailField = new JTextField(15);
@@ -72,35 +67,30 @@ public class SettingScreen extends JFrame {
         setEmailPanel.add(emailLabel);
         setEmailPanel.add(setEmailField);
 
-        // 현재 비밀번호 확인 패널
         JPanel currentPasswordPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel crtPasswordLabel = new JLabel("현재 비밀번호 : ");
         JPasswordField crtPasswordField = new JPasswordField(15);
         currentPasswordPanel.add(crtPasswordLabel);
         currentPasswordPanel.add(crtPasswordField);
 
-        // 수정할 비밀번호 입력 패널
         JPanel setPasswordPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel setPasswordLabel = new JLabel("변경할 비밀번호 : ");
         JPasswordField setPasswordField = new JPasswordField(15);
         setPasswordPanel.add(setPasswordLabel);
         setPasswordPanel.add(setPasswordField);
 
-        // 수정할 비밀번호 확인 패널
         JPanel checkPasswordPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel checkPasswordLabel = new JLabel("비밀번호 확인 : ");
         JPasswordField checkPasswordField = new JPasswordField(15);
         checkPasswordPanel.add(checkPasswordLabel);
         checkPasswordPanel.add(checkPasswordField);
 
-        // 뒤로가기 버튼, 정보 변경 버튼
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JButton backBtn = new JButton("뒤로가기");
         JButton setBtn = new JButton("정보 수정");
         btnPanel.add(backBtn);
         btnPanel.add(setBtn);
 
-        // 사진 선택 버튼
         selectImageBtn.addActionListener(e -> {
             JFileChooser chooser = new JFileChooser();
             chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -118,7 +108,6 @@ public class SettingScreen extends JFrame {
             }
         });
 
-        // 중복 확인 버튼
         checkIdBtn.addActionListener(e -> {
             UserDAO userDAO = new UserDAO(conn);
             String newId = setIdField.getText();
@@ -129,44 +118,34 @@ public class SettingScreen extends JFrame {
             }
         });
 
-        // 뒤로가기 버튼
         backBtn.addActionListener(e -> {
-            new DiaryListScreen(conn); // 다이어리 목록 화면으로 이동
+            new DiaryListScreen(conn);
             dispose();
         });
 
-        // 정보 수정 버튼
         setBtn.addActionListener(e -> {
             String newId = setIdField.getText();
             String newEmail = setEmailField.getText();
             String currentPassword = new String(crtPasswordField.getPassword());
             String newPassword = new String(setPasswordField.getPassword());
             String confirmPassword = new String(checkPasswordField.getPassword());
-
-            // 현재 비밀번호 확인
             if (!user.getPassword().equals(currentPassword)) {
                 JOptionPane.showMessageDialog(SettingScreen.this, "현재 비밀번호가 틀립니다.");
                 return;
             }
-
-            // 비밀번호 확인
             if (!newPassword.equals(confirmPassword)) {
                 JOptionPane.showMessageDialog(SettingScreen.this, "새 비밀번호가 일치하지 않습니다.");
                 return;
             }
-
-            // 정보 수정
             user.setUserId(newId);
             user.setEmail(newEmail);
             user.setPassword(newPassword);
             user.setImage(imagePath);
-
             UserDAO userDAO = new UserDAO(conn);
             boolean isUpdated = userDAO.updateUser(user);
-
             if (isUpdated) {
                 JOptionPane.showMessageDialog(SettingScreen.this, "정보가 수정되었습니다.");
-                new DiaryListScreen(conn); // 다이어리 목록 화면으로 이동
+                new DiaryListScreen(conn);
                 dispose();
             } else {
                 JOptionPane.showMessageDialog(SettingScreen.this, "정보 수정에 실패했습니다. 다시 시도해주세요.");

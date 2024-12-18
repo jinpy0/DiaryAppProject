@@ -60,16 +60,15 @@ public class NewDiaryScreen extends JFrame {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
             fileChooser.setFileFilter(new FileNameExtensionFilter("이미지 파일", "jpg", "jpeg", "png", "gif"));
-
             int result = fileChooser.showOpenDialog(NewDiaryScreen.this);
             if (result == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = fileChooser.getSelectedFile();
-                imagePath = selectedFile.getAbsolutePath(); // 이미지 경로 업데이트
+                imagePath = selectedFile.getAbsolutePath();
 
                 ImageIcon imageIcon = new ImageIcon(imagePath);
                 Image image = imageIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
                 imageLabel.setIcon(new ImageIcon(image));
-                imageLabel.setText(null); // 텍스트 제거
+                imageLabel.setText(null);
             }
         });
 
@@ -86,15 +85,5 @@ public class NewDiaryScreen extends JFrame {
         });
 
         setVisible(true);
-    }
-
-    public static void main(String[] args) {
-        // 테스트용 UserSession 설정
-        UserDTO sampleUser = new UserDTO(1, "sample_user", "Sample User", "sample@example.com", "password", "path/to/user/image.jpg", "USER");
-        UserSession.getInstance().setCurrentUser(sampleUser);
-
-        // DB 연결 객체 생성 후 실행
-        Connection conn = DBConnection.getConnection();
-        new NewDiaryScreen(conn);
     }
 }
